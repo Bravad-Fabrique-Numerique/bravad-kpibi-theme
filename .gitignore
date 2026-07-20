@@ -1,0 +1,10 @@
+# Système
+.DS_Store
+Thumbs.db
+
+# Archives générées (le zip du thème n'est pas versionné, il se régénère)
+*.zip
+
+# Éditeurs
+.vscode/
+.idea/
