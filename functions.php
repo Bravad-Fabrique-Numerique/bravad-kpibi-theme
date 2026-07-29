@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Sécurité : pas d'accès direct.
 }
 
-define( 'KPIBI_VERSION', '1.3.10' );
+define( 'KPIBI_VERSION', '1.3.11' );
 
 /**
  * Réglages de base du thème.
