@@ -457,3 +457,65 @@ header { position: sticky; top: 0; z-index: 100; }
 /* Marge sous les boutons CTA : la ligne de garantie était collée aux boutons
    car .section-cta p (margin-top:0) l'emportait sur .cta-guarantee. */
 .section-cta .cta-guarantee { margin-top: 24px; }
+
+/* ===== PASTILLES — COMPORTEMENT PARTAGÉ (KPIBI-17) =====
+   Les « pastilles » (libellés arrondis en majuscules au-dessus des titres de
+   section) sont déclarées par 7 classes distinctes qui redupliquent chacune
+   border-radius / padding / letter-spacing / text-transform, sans base
+   commune : .hero-label (l.94), .page-hero-label (l.105), .section-label
+   (l.122), .section-label-light (l.123, modificateur fond sombre), .cta-label
+   (l.200), .forfait-badge (l.261), .cas-tag (l.298). Le centrage devait donc
+   être corrigé 7 fois. Ce bloc définit le comportement partagé UNE seule fois,
+   en groupe de sélecteurs : aucune classe n'est renommée, aucun gabarit n'est
+   à modifier. (.blog-card-tag n'est pas une pastille — ni bordure ni rayon.)
+
+   POURQUOI CHAQUE CLASSE EST DOUBLÉE (.hero-label.hero-label) :
+   les pastilles sont des <p> (sauf .cas-tag, un <span>), et le thème déclare
+   plusieurs règles de conteneur qualifiées par un élément — .section-header p
+   (l.126), .pourquoi-content > p (l.156), .section-cta p (l.203),
+   .split-content p (l.222). Celles-ci sont à 0-1-1, donc PLUS spécifiques
+   qu'une pastille à classe unique (0-1-0) : elles l'emportent quel que soit
+   l'ordre du fichier et volent à la pastille color, font-size, line-height,
+   max-width et margin. Doubler la classe porte la base à 0-2-0, ce qui reprend
+   la main sans toucher au HTML ni déplacer une règle existante (l'ordre de la
+   cascade du thème doit rester intact — cf. .btn.nav-cta plus haut). */
+.hero-label.hero-label,
+.page-hero-label.page-hero-label,
+.section-label.section-label,
+.section-label-light.section-label-light,
+.cta-label.cta-label,
+.forfait-badge.forfait-badge,
+.cas-tag.cas-tag {
+	/* Centre les lignes de texte à l'intérieur de la pastille. Sans effet
+	   visible sur une pastille d'une seule ligne (largeur = contenu), et ne
+	   déplace pas la pastille elle-même dans son parent : le centrage
+	   horizontal du bloc reste géré par le conteneur (.section-header). */
+	text-align: center;
+	/* .forfait-badge et .cas-tag sont en inline-flex : leur texte forme un
+	   élément de flex anonyme et text-align ne centre que les lignes DANS cet
+	   élément. Quand la pastille passe sur 2 lignes, l'élément anonyme est
+	   aligné au début par défaut — justify-content est donc indispensable pour
+	   que le centrage soit réel, et pas seulement pour les pastilles en
+	   inline-block. */
+	justify-content: center;
+	/* Interlignage resserré, identique pour les 7 classes : le line-height
+	   héritable (1,65 du body) ou volé aux règles de conteneur (1,7 / 1,8)
+	   étire la pastille dès qu'elle passe sur 2 lignes. */
+	line-height: 1.35;
+}
+
+/* Couleurs des pastilles reprises à la même spécificité (0-2-0), car les
+   règles de conteneur ci-dessus écrasaient la couleur déclarée : mesuré à
+   rgb(100,116,139) (--slate-500) au lieu de --gold-700/--gold-400 pour
+   .section-label, et rgba(255,255,255,0.66) au lieu de --gold-400 pour
+   .cta-label. Le modificateur fond sombre doit rester déclaré APRÈS la base :
+   les deux sélecteurs sont à 0-2-0, seul l'ordre les sépare. */
+.section-label.section-label { color: var(--gold-700); }
+.section-label.section-label-light { color: var(--gold-400); }
+.cta-label.cta-label { color: var(--gold-400); }
+
+/* Exception fond sombre de la l.153 (.pourquoi-content .section-label, en
+   --gold-400) : elle est à 0-2-0 comme la règle de base ci-dessus et perdrait
+   désormais au seul titre de l'ordre du fichier. On la réaffirme ici à 0-3-0
+   plutôt que de déplacer la l.153. */
+.pourquoi-content .section-label.section-label { color: var(--gold-400); }
