@@ -1,0 +1,21 @@
+# Thème KPIBI — durcissement du dossier du thème
+#
+# Empêche le serveur de servir les fichiers de travail présents dans le dépôt
+# (documentation, sources SCSS, fichiers de build). Sans ça, ils sont lisibles
+# publiquement : vérifié le 2026-07-28, /wp-content/themes/kpibi/README.md
+# était servi en clair.
+#
+# Portée volontairement limitée à ce dossier : bloquer ces extensions à la
+# racine du site casserait des plugins qui chargent légitimement du .json.
+
+<FilesMatch "\.(md|scss|map|json|yml|yaml|lock)$">
+	# Apache 2.4
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	# Apache 2.2 (repli)
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Deny from all
+	</IfModule>
+</FilesMatch>
