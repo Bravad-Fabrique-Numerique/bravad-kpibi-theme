@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Sécurité : pas d'accès direct.
 }
 
-define( 'KPIBI_VERSION', '1.3.19' );
+define( 'KPIBI_VERSION', '1.3.20' );
 
 /**
  * Réglages de base du thème.
@@ -801,6 +801,22 @@ function kpibi_register_strings() {
 		'alt_svcauto_techno'       => 'Illustration des technologies utilisées', // Illustration of the technologies used
 		'alt_cas_client'           => 'Cas client KPIBI', // KPIBI case study
 		'alt_blog_article'         => 'Article du blogue KPIBI', // KPIBI blog post
+		/*
+		 * Libellés du lien de témoins et de la modale de consultation (KPIBI-33).
+		 * Ils étaient choisis par un ternaire sur pll_current_language() dans
+		 * footer.php : bilingues à l'écran, mais hors de portée du client, qui ne
+		 * pouvait en corriger aucun sans passer par un développeur.
+		 *
+		 * ATTENTION : tant que les traductions ci-dessous ne sont pas saisies dans
+		 * Langues › Traductions, les pages anglaises affichent le FRANÇAIS — c'est
+		 * le repli normal de Polylang, pas une régression du code. Les valeurs de
+		 * la colonne de droite sont exactement les textes anglais qui étaient en
+		 * dur : les saisir telles quelles restitue l'affichage d'avant.
+		 */
+		'footer_legal_cookies' => 'Politique de cookies', // Cookie Policy
+		'modal_surtitre'       => 'Première étape', // First step
+		'modal_titre'          => 'Planifier une consultation gratuite', // Book a free consultation
+		'modal_fermer'         => 'Fermer', // Close
 	);
 	foreach ( $kpibi_strings as $kpibi_string_name => $kpibi_string_value ) {
 		pll_register_string( $kpibi_string_name, $kpibi_string_value, 'KPIBI — Thème', false );
