@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Sécurité : pas d'accès direct.
 }
 
-define( 'KPIBI_VERSION', '1.3.14' );
+define( 'KPIBI_VERSION', '1.3.15' );
 
 /**
  * Réglages de base du thème.
@@ -262,8 +262,52 @@ function kpibi_security_headers() {
 add_action( 'send_headers', 'kpibi_security_headers' );
 
 /**
+ * Helper : typographie française — espace insécable avant $, %, : et ;.
+ *
+ * La règle est volontairement étroite : on ne remplace QUE l'espace ordinaire
+ * (U+0020) qui précède immédiatement le symbole. Cette seule condition suffit à
+ * protéger tout ce qu'il ne faut pas toucher, sans liste d'exclusion à tenir :
+ *
+ * - URL : dans `https://` ou `mailto:info@…`, le « : » suit une lettre, jamais
+ *   une espace — la chaîne est laissée intacte.
+ * - Valeurs CSS : dans `center 20%`, le « % » suit le chiffre, pas une espace.
+ * - Entités HTML : dans `&amp;` ou `&#8217;`, le « ; » suit une lettre ou un
+ *   chiffre. La transformation s'applique de toute façon AVANT l'échappement,
+ *   donc sur du texte brut où aucune entité n'a encore été produite.
+ *
+ * @param mixed $texte Valeur à traiter (les non-chaînes sont retournées telles quelles).
+ * @return mixed
+ */
+function kpibi_typo( $texte ) {
+	if ( ! is_string( $texte ) || '' === $texte ) {
+		return $texte;
+	}
+	// U+00A0. Le drapeau /u traite la chaîne en UTF-8 (accents du contenu FR).
+	return preg_replace( '/ (?=[$%:;])/u', "\xC2\xA0", $texte );
+}
+
+/**
+ * Helper : applique kpibi_typo() en profondeur (répéteurs ACF, tableaux de
+ * valeurs par défaut). Les clés ne sont jamais touchées, seulement les chaînes.
+ *
+ * @param mixed $valeur Chaîne, tableau imbriqué, ou toute autre valeur.
+ * @return mixed
+ */
+function kpibi_typo_deep( $valeur ) {
+	if ( is_array( $valeur ) ) {
+		return array_map( 'kpibi_typo_deep', $valeur );
+	}
+	return kpibi_typo( $valeur );
+}
+
+/**
  * Helper : retourne un champ ACF, ou une valeur par défaut si ACF est absent ou le champ vide.
  * Permet au thème de fonctionner même avant l'installation d'ACF (affiche le contenu par défaut).
+ *
+ * La typographie française est appliquée ici, au point de passage unique de
+ * tout le contenu éditorial : le texte que le client saisira demain en profite
+ * sans qu'on ait à retoucher un gabarit. La valeur par défaut y passe aussi,
+ * pour que le rendu soit identique que le champ soit rempli ou non.
  *
  * @param string $name    Nom du champ ACF.
  * @param string $default Valeur par défaut.
@@ -271,10 +315,10 @@ add_action( 'send_headers', 'kpibi_security_headers' );
  */
 function kpibi_f( $name, $default = '' ) {
 	if ( ! function_exists( 'get_field' ) ) {
-		return $default;
+		return kpibi_typo( $default );
 	}
 	$value = get_field( $name );
-	return ( null !== $value && '' !== $value ) ? $value : $default;
+	return kpibi_typo_deep( ( null !== $value && '' !== $value ) ? $value : $default );
 }
 
 /**
@@ -417,10 +461,10 @@ function kpibi_cas_lines( $value ) {
 		return array();
 	}
 	if ( is_array( $value ) ) {
-		return $value;
+		return kpibi_typo_deep( $value );
 	}
 	$lines = preg_split( '/\r\n|\r|\n/', (string) $value );
-	return array_values( array_filter( array_map( 'trim', $lines ), 'strlen' ) );
+	return kpibi_typo_deep( array_values( array_filter( array_map( 'trim', $lines ), 'strlen' ) ) );
 }
 
 /**

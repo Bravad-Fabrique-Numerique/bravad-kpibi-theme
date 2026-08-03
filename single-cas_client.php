@@ -30,20 +30,20 @@ while ( have_posts() ) :
 	$kpibi_post_id = get_the_ID();
 	$kpibi_has_acf = function_exists( 'get_field' );
 
-	$kpibi_tag            = $kpibi_has_acf ? get_field( 'ccpt_tag', $kpibi_post_id ) : '';
+	$kpibi_tag            = $kpibi_has_acf ? kpibi_typo_deep( get_field( 'ccpt_tag', $kpibi_post_id ) ) : '';
 	$kpibi_image           = has_post_thumbnail( $kpibi_post_id ) ? get_the_post_thumbnail_url( $kpibi_post_id, 'full' ) : '';
 	$kpibi_titre           = get_the_title( $kpibi_post_id );
-	$kpibi_titre_fort      = $kpibi_has_acf ? get_field( 'ccpt_titre_fort', $kpibi_post_id ) : '';
+	$kpibi_titre_fort      = $kpibi_has_acf ? kpibi_typo_deep( get_field( 'ccpt_titre_fort', $kpibi_post_id ) ) : '';
 	$kpibi_contexte        = kpibi_cas_lines( $kpibi_has_acf ? get_field( 'ccpt_contexte', $kpibi_post_id ) : '' );
 	$kpibi_solution        = kpibi_cas_lines( $kpibi_has_acf ? get_field( 'ccpt_solution', $kpibi_post_id ) : '' );
 	$kpibi_solution_liste  = kpibi_cas_lines( $kpibi_has_acf ? get_field( 'ccpt_solution_liste', $kpibi_post_id ) : '' );
 	$kpibi_solution_apres  = kpibi_cas_lines( $kpibi_has_acf ? get_field( 'ccpt_solution_apres', $kpibi_post_id ) : '' );
-	$kpibi_chiffres        = $kpibi_has_acf ? (array) get_field( 'ccpt_resultats_chiffres', $kpibi_post_id ) : array();
+	$kpibi_chiffres        = $kpibi_has_acf ? kpibi_typo_deep( (array) get_field( 'ccpt_resultats_chiffres', $kpibi_post_id ) ) : array();
 	$kpibi_resultats       = kpibi_cas_lines( $kpibi_has_acf ? get_field( 'ccpt_resultats_liste', $kpibi_post_id ) : '' );
-	$kpibi_citation        = $kpibi_has_acf ? get_field( 'ccpt_citation', $kpibi_post_id ) : '';
-	$kpibi_citation_fort   = $kpibi_has_acf ? get_field( 'ccpt_citation_fort', $kpibi_post_id ) : '';
-	$kpibi_auteur_nom      = $kpibi_has_acf ? get_field( 'ccpt_auteur_nom', $kpibi_post_id ) : '';
-	$kpibi_auteur_role     = $kpibi_has_acf ? get_field( 'ccpt_auteur_role', $kpibi_post_id ) : '';
+	$kpibi_citation        = $kpibi_has_acf ? kpibi_typo_deep( get_field( 'ccpt_citation', $kpibi_post_id ) ) : '';
+	$kpibi_citation_fort   = $kpibi_has_acf ? kpibi_typo_deep( get_field( 'ccpt_citation_fort', $kpibi_post_id ) ) : '';
+	$kpibi_auteur_nom      = $kpibi_has_acf ? kpibi_typo_deep( get_field( 'ccpt_auteur_nom', $kpibi_post_id ) ) : '';
+	$kpibi_auteur_role     = $kpibi_has_acf ? kpibi_typo_deep( get_field( 'ccpt_auteur_role', $kpibi_post_id ) ) : '';
 	$kpibi_img_pos         = ( $kpibi_has_acf && get_field( 'ccpt_img_position', $kpibi_post_id ) ) ? get_field( 'ccpt_img_position', $kpibi_post_id ) : 'center';
 
 	$kpibi_cas_clients_url = home_url( '/cas-clients/' );

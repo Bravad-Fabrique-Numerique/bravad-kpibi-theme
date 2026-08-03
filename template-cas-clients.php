@@ -169,33 +169,39 @@ $kpibi_cas_clients = array();
 // alors seulement le titre/l'image natifs de chaque post, sans planter.
 $kpibi_has_acf = function_exists( 'get_field' );
 foreach ( $kpibi_cas_posts as $kpibi_cas_post ) {
-	$kpibi_post_id       = $kpibi_cas_post->ID;
-	$kpibi_cas_clients[] = array(
-		'tag'                => $kpibi_has_acf ? get_field( 'ccpt_tag', $kpibi_post_id ) : '',
-		'image'              => get_the_post_thumbnail_url( $kpibi_post_id, 'large' ),
-		// Texte alternatif résolu ici, où l'ID du post est connu : l'URL ci-dessus
-		// est une taille intermédiaire, non résoluble depuis l'URL seule.
-		'image_alt'          => kpibi_thumb_alt( $kpibi_post_id, '' ),
-		'titre'              => get_the_title( $kpibi_post_id ),
-		'titre_fort'         => $kpibi_has_acf ? get_field( 'ccpt_titre_fort', $kpibi_post_id ) : '',
-		'contexte'           => $kpibi_has_acf ? get_field( 'ccpt_contexte', $kpibi_post_id ) : '',
-		'solution'           => $kpibi_has_acf ? get_field( 'ccpt_solution', $kpibi_post_id ) : '',
-		'solution_liste'     => $kpibi_has_acf ? get_field( 'ccpt_solution_liste', $kpibi_post_id ) : '',
-		'solution_apres'     => $kpibi_has_acf ? get_field( 'ccpt_solution_apres', $kpibi_post_id ) : '',
-		'resultats_chiffres' => $kpibi_has_acf ? get_field( 'ccpt_resultats_chiffres', $kpibi_post_id ) : array(),
-		'resultats_liste'    => $kpibi_has_acf ? get_field( 'ccpt_resultats_liste', $kpibi_post_id ) : '',
-		'citation'           => $kpibi_has_acf ? get_field( 'ccpt_citation', $kpibi_post_id ) : '',
-		'citation_fort'      => $kpibi_has_acf ? get_field( 'ccpt_citation_fort', $kpibi_post_id ) : '',
-		'auteur_nom'         => $kpibi_has_acf ? get_field( 'ccpt_auteur_nom', $kpibi_post_id ) : '',
-		'auteur_role'        => $kpibi_has_acf ? get_field( 'ccpt_auteur_role', $kpibi_post_id ) : '',
-		'img_position'       => ( $kpibi_has_acf && get_field( 'ccpt_img_position', $kpibi_post_id ) ) ? get_field( 'ccpt_img_position', $kpibi_post_id ) : 'center',
+	$kpibi_post_id = $kpibi_cas_post->ID;
+	// Seul le TEXTE passe par la typographie française. L'URL de l'image et la
+	// valeur CSS `img_position` sont ajoutées après, hors de kpibi_typo_deep() :
+	// ce ne sont pas des phrases, elles n'ont rien à y gagner.
+	$kpibi_cas_item = kpibi_typo_deep(
+		array(
+			'tag'                => $kpibi_has_acf ? get_field( 'ccpt_tag', $kpibi_post_id ) : '',
+			'titre'              => get_the_title( $kpibi_post_id ),
+			'titre_fort'         => $kpibi_has_acf ? get_field( 'ccpt_titre_fort', $kpibi_post_id ) : '',
+			'contexte'           => $kpibi_has_acf ? get_field( 'ccpt_contexte', $kpibi_post_id ) : '',
+			'solution'           => $kpibi_has_acf ? get_field( 'ccpt_solution', $kpibi_post_id ) : '',
+			'solution_liste'     => $kpibi_has_acf ? get_field( 'ccpt_solution_liste', $kpibi_post_id ) : '',
+			'solution_apres'     => $kpibi_has_acf ? get_field( 'ccpt_solution_apres', $kpibi_post_id ) : '',
+			'resultats_chiffres' => $kpibi_has_acf ? get_field( 'ccpt_resultats_chiffres', $kpibi_post_id ) : array(),
+			'resultats_liste'    => $kpibi_has_acf ? get_field( 'ccpt_resultats_liste', $kpibi_post_id ) : '',
+			'citation'           => $kpibi_has_acf ? get_field( 'ccpt_citation', $kpibi_post_id ) : '',
+			'citation_fort'      => $kpibi_has_acf ? get_field( 'ccpt_citation_fort', $kpibi_post_id ) : '',
+			'auteur_nom'         => $kpibi_has_acf ? get_field( 'ccpt_auteur_nom', $kpibi_post_id ) : '',
+			'auteur_role'        => $kpibi_has_acf ? get_field( 'ccpt_auteur_role', $kpibi_post_id ) : '',
+			// Texte alternatif résolu ici, où l'ID du post est connu : l'URL de la
+			// vignette est une taille intermédiaire, non résoluble depuis l'URL seule.
+			'image_alt'          => kpibi_thumb_alt( $kpibi_post_id, '' ),
+		)
 	);
+	$kpibi_cas_item['image']        = get_the_post_thumbnail_url( $kpibi_post_id, 'large' );
+	$kpibi_cas_item['img_position'] = ( $kpibi_has_acf && get_field( 'ccpt_img_position', $kpibi_post_id ) ) ? get_field( 'ccpt_img_position', $kpibi_post_id ) : 'center';
+	$kpibi_cas_clients[]            = $kpibi_cas_item;
 }
 
 // Repli : aucun post « cas_client » en base — affiche les 3 cas de démo
 // d'origine plutôt que de laisser la section vide (voir note en tête de fichier).
 if ( empty( $kpibi_cas_clients ) ) {
-	$kpibi_cas_clients = $kpibi_cas_defaults;
+	$kpibi_cas_clients = kpibi_typo_deep( $kpibi_cas_defaults );
 }
 
 while ( have_posts() ) :

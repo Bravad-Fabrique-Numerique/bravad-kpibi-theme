@@ -268,7 +268,7 @@ get_header();
 						'reponse'  => "Certaines opportunités s'évaluent rapidement en consultation. Pour les environnements plus complexes, un diagnostic permet de valider les processus, les systèmes, les contraintes et le potentiel de ROI avant de recommander une solution.",
 					),
 				);
-				$kpibi_faq_items = get_field( 'forfait_faq' ) ?: $kpibi_faq_defaults;
+				$kpibi_faq_items = kpibi_typo_deep( get_field( 'forfait_faq' ) ?: $kpibi_faq_defaults );
 				foreach ( $kpibi_faq_items as $kpibi_faq_item ) :
 					?>
 					<details class="faq-item reveal">

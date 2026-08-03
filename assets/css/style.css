@@ -302,6 +302,11 @@ a { text-decoration: none; color: inherit; }
 .cas-results { display: flex; gap: 32px; flex-wrap: wrap; padding: 24px 0; border-top: 1px solid var(--slate-200); border-bottom: 1px solid var(--slate-200); margin-bottom: 28px; }
 .cas-result-num { font-family: "Dubai", sans-serif; font-size: 36px; font-weight: 300; color: var(--gold-600); line-height: 1; margin-bottom: 4px; }
 .cas-result-label { font-size: 12px; color: var(--slate-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+/* Sur mobile, resserre le chiffre et son libellé (ex. « 20–30 h » / « ÉCONOMISÉES PAR MOIS »).
+   Le sélecteur reprend `.cas-card-body` à dessein : la règle générique
+   `.cas-card-body p` ci-dessus est plus spécifique que `.cas-result-num` et lui
+   impose sa marge de 24 px, trop grande pour un couple chiffre/libellé. */
+@media (max-width: 768px) { .cas-card-body .cas-result-num { margin-bottom: 4px; } }
 
 /* BLOGUE */
 .section-blog { padding: 100px 0; background: var(--white); }

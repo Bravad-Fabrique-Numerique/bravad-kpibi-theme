@@ -68,7 +68,7 @@ while ( have_posts() ) :
 			'icone' => 'robot',
 		),
 	);
-	$kpibi_svcauto_tuiles_items = get_field( 'svcauto_tuiles' ) ?: $kpibi_svcauto_tuiles_defaults;
+	$kpibi_svcauto_tuiles_items = kpibi_typo_deep( get_field( 'svcauto_tuiles' ) ?: $kpibi_svcauto_tuiles_defaults );
 
 	/* ----- Valeurs par défaut des sections COMMUNES (contenu de service-optimisation.html) ----- */
 
@@ -94,7 +94,7 @@ while ( have_posts() ) :
 			'texte' => 'Des KPI clairs pour faire évoluer le système dans le temps.',
 		),
 	);
-	$kpibi_approche_items = get_field( 'approche_items' ) ?: $kpibi_approche_defaults;
+	$kpibi_approche_items = kpibi_typo_deep( get_field( 'approche_items' ) ?: $kpibi_approche_defaults );
 
 	$kpibi_etapes_defaults = array(
 		array(
@@ -118,7 +118,7 @@ while ( have_posts() ) :
 			'texte' => 'Suivi, mesures et évolution du système dans le temps.',
 		),
 	);
-	$kpibi_etapes_items = get_field( 'etapes_items' ) ?: $kpibi_etapes_defaults;
+	$kpibi_etapes_items = kpibi_typo_deep( get_field( 'etapes_items' ) ?: $kpibi_etapes_defaults );
 
 	$kpibi_benefits_defaults = array(
 		array(
@@ -154,7 +154,7 @@ while ( have_posts() ) :
 			'texte' => 'Processus plus simples, plus rapides et beaucoup plus prévisibles, qui accompagnent la croissance de l\'entreprise.',
 		),
 	);
-	$kpibi_benefits_items = get_field( 'benefits_items' ) ?: $kpibi_benefits_defaults;
+	$kpibi_benefits_items = kpibi_typo_deep( get_field( 'benefits_items' ) ?: $kpibi_benefits_defaults );
 	?>
 
 	<!-- BANNIÈRE -->
