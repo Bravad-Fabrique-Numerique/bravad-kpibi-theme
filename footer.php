@@ -15,7 +15,28 @@ if ( $kpibi_footer_is_en ) {
 	$kpibi_desc      = get_theme_mod( 'kpibi_footer_desc', "Spécialiste québécois en intelligence d'affaires pour PME. Tableaux de bord KPI, automatisation des processus et développement d'applications sur mesure." );
 	$kpibi_copyright = get_theme_mod( 'kpibi_copyright', '© ' . gmdate( 'Y' ) . ' KPIBI. Tous droits réservés. Québec, Canada.' );
 }
+/*
+ * Lien « Politique de confidentialité » du pied de page.
+ *
+ * Il pointait vers « # » (lien mort relevé en QA) parce que le réglage du
+ * Personnalisateur n'a jamais été rempli. On ajoute deux replis avant de
+ * renoncer, du plus explicite au plus automatique :
+ *   1. le réglage du Personnalisateur, s'il est renseigné — il reste
+ *      prioritaire, notamment pour pointer vers une page externe ;
+ *   2. la page de confidentialité désignée dans Réglages › Confidentialité,
+ *      mécanisme natif de WordPress ;
+ *   3. la page dont le slug est « politique-de-confidentialite ».
+ * Le lien n'est affiché que si l'une des trois pistes aboutit : mieux vaut pas
+ * de lien qu'un lien mort.
+ */
 $kpibi_privacy_url = get_theme_mod( 'kpibi_privacy_url', '' );
+if ( '' === $kpibi_privacy_url ) {
+	$kpibi_privacy_url = (string) get_privacy_policy_url();
+}
+if ( '' === $kpibi_privacy_url ) {
+	$kpibi_privacy_page = get_page_by_path( 'politique-de-confidentialite' );
+	$kpibi_privacy_url  = $kpibi_privacy_page ? (string) get_permalink( $kpibi_privacy_page ) : '';
+}
 // Lien vers la politique de témoins (cookies) générée par Complianz.
 $kpibi_cookie_page  = get_page_by_path( 'politique-de-temoins-ca' );
 $kpibi_cookie_url   = $kpibi_cookie_page ? get_permalink( $kpibi_cookie_page ) : '';
@@ -70,7 +91,9 @@ $kpibi_cookie_label = $kpibi_footer_is_en ? 'Cookie Policy' : 'Politique de cook
 		<div class="footer-bottom">
 			<p><?php echo esc_html( $kpibi_copyright ); ?></p>
 			<nav class="footer-legal" aria-label="Liens légaux">
-				<a href="<?php echo esc_url( $kpibi_privacy_url ? $kpibi_privacy_url : '#' ); ?>"><?php echo esc_html( kpibi__( 'Politique de confidentialité' ) ); ?></a>
+				<?php if ( $kpibi_privacy_url ) : ?>
+					<a href="<?php echo esc_url( $kpibi_privacy_url ); ?>"><?php echo esc_html( kpibi__( 'Politique de confidentialité' ) ); ?></a>
+				<?php endif; ?>
 				<a href="<?php echo esc_url( $kpibi_cookie_url ? $kpibi_cookie_url : '#' ); ?>"><?php echo esc_html( $kpibi_cookie_label ); ?></a>
 			</nav>
 		</div>

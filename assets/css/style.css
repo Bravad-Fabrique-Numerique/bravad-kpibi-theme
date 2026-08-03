@@ -648,3 +648,42 @@ header { position: sticky; top: 0; z-index: 100; }
    désormais au seul titre de l'ordre du fichier. On la réaffirme ici à 0-3-0
    plutôt que de déplacer la l.153. */
 .pourquoi-content .section-label.section-label { color: var(--gold-400); }
+
+/* ===== MOBILE — COUPURES ET DÉBORDEMENTS (KPIBI-20) =====
+   Trois constats de QA, trois causes distinctes. */
+
+/* 1. Texte non centré dans les boutons ÉTIRÉS (constat : Samsung Galaxy S24).
+   .btn est en inline-flex sans justify-content : la valeur initiale `normal`
+   se comporte comme flex-start. Tant que le bouton s'auto-dimensionne, aucune
+   différence visible ; dès qu'il est étiré (.mobile-cta .btn { width:100% },
+   ou un conteneur qui l'allonge), le libellé reste collé à gauche. On centre
+   à la source plutôt que de le répéter sur chaque cas d'étirement. */
+.btn { justify-content: center; text-align: center; }
+
+/* 2. Menu mobile ouvert : le lien « Forfait » paraissait deux fois plus gros
+   que ses voisins (26px Dubai contre 17px Manrope). Ce n'est pas un réglage
+   propre à Forfait : c'est le style de BASE des liens du menu mobile, hérité
+   par tout lien de premier niveau. Les autres entrées y échappent parce
+   qu'elles sont soit des intitulés de groupe (.mobile-menu-group), soit des
+   sous-liens (.sub). « Forfait » est le seul lien de premier niveau autonome,
+   d'où l'impression d'anomalie. On aligne les liens autonomes sur les
+   sous-liens, sans leur retrait — ils restent ainsi lisibles comme des entrées
+   de premier niveau. */
+.mobile-menu nav a:not(.sub) {
+	font-family: "Manrope", sans-serif;
+	font-size: 17px;
+	font-weight: 500;
+}
+
+/* 3. Débordement horizontal sous 360px (mesuré à 320px : le hamburger sortait
+   de 16px). L'en-tête réclame 324px — 268 de contenu, 40 de gouttières, 16 de
+   marge du sélecteur de langue — pour 268px disponibles entre les marges du
+   conteneur. On récupère la place sur les espacements plutôt qu'en masquant un
+   élément : tout reste atteignable. Le bouton « Consultation gratuite » est
+   déjà masqué sous 640px (voir .btn.nav-cta plus haut). */
+@media (max-width: 400px) {
+	.nav .container { padding-left: 16px; padding-right: 16px; }
+	.nav-inner { gap: 4px; }
+	.lang-switcher { margin-left: 4px; }
+	.lang-link { padding-left: 6px; padding-right: 6px; }
+}

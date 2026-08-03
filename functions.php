@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Sécurité : pas d'accès direct.
 }
 
-define( 'KPIBI_VERSION', '1.3.13' );
+define( 'KPIBI_VERSION', '1.3.14' );
 
 /**
  * Réglages de base du thème.
@@ -43,13 +43,152 @@ function kpibi_setup() {
 add_action( 'after_setup_theme', 'kpibi_setup' );
 
 /**
+ * Retire de l'en-tête deux liens que WordPress émet par défaut et qui pointent
+ * vers des ressources absentes sur ce site — relevés en 404 par le scan de QA
+ * (2 erreurs sur 168 URLs vérifiées) :
+ *
+ * 1. « RSD » (Really Simple Discovery), /xmlrpc.php?rsd — un mécanisme de
+ *    découverte destiné aux clients de publication distants (Windows Live
+ *    Writer et consorts). Obsolète, et inutile ici puisque le contenu se gère
+ *    dans wp-admin. Le lien renvoie 404, l'accès à xmlrpc.php étant fermé.
+ *
+ * 2. Le flux RSS des COMMENTAIRES, /comments/feed/. Les commentaires sont
+ *    désactivés sur ce site : le flux n'existe pas, d'où le 404 sur la version
+ *    anglaise (/en/comments/feed/).
+ *
+ * Le flux PRINCIPAL des articles est conservé — il est légitime pour le blogue.
+ * Deux mécanismes distincts produisent des flux de commentaires, d'où deux
+ * traitements :
+ *   - feed_links() émet le flux global des commentaires du site en même temps
+ *     que le flux principal. On ne peut donc pas le retirer en désactivant le
+ *     hook sans perdre aussi le flux du blogue : c'est le filtre
+ *     `feed_links_show_comments_feed` qui permet de ne désactiver que lui.
+ *   - feed_links_extra() émet les flux secondaires (commentaires d'un article,
+ *     par catégorie, par auteur), tous inutiles ici.
+ */
+function kpibi_nettoyer_entete() {
+	remove_action( 'wp_head', 'rsd_link' );
+	remove_action( 'wp_head', 'feed_links_extra', 3 );
+}
+add_action( 'init', 'kpibi_nettoyer_entete' );
+add_filter( 'feed_links_show_comments_feed', '__return_false' );
+
+/**
+ * Image de partage social par défaut (og:image / twitter:image).
+ *
+ * Constat de QA : aucune balise og:image n'était émise, et l'aperçu de partage
+ * Facebook affichait le logo mal cadré. Yoast n'a pas d'image sociale par
+ * défaut configurée, et son réglage n'est pas accessible autrement que par son
+ * interface — on le pose donc ici, dans le thème, où il est versionné.
+ *
+ * L'image est retrouvée par son SLUG plutôt que par un ID numérique : les ID de
+ * pièces jointes changent d'un environnement à l'autre (dev / prod), alors que
+ * le slug survit à une réimportation de la médiathèque. Résultat mémorisé pour
+ * ne pas refaire la requête à chaque appel.
+ *
+ * Ne s'applique QUE si aucune image n'est déjà définie pour la page courante :
+ * une image mise en avant ou une image sociale saisie dans Yoast reste
+ * prioritaire.
+ *
+ * À revoir : l'idéal pour le partage social est un visuel dédié au format
+ * 1200 × 630 (ratio 1.91:1) portant le logo et une accroche. L'image utilisée
+ * ici est une photo du site (1800 × 1200, ratio 1.5) : elle sera légèrement
+ * recadrée en haut et en bas par les réseaux sociaux.
+ */
+function kpibi_url_image_partage() {
+	static $url = null;
+	if ( null === $url ) {
+		// get_page_by_path() ne convient PAS ici : pour une pièce jointe
+		// rattachée à une publication, le « chemin » attendu inclut le slug du
+		// parent, si bien qu'une recherche sur le seul slug du fichier ne
+		// renvoie rien (vérifié : aucune balise produite). On interroge donc
+		// directement par post_name, avec le statut « inherit » propre aux
+		// pièces jointes.
+		$ids = get_posts(
+			array(
+				'name'           => 'kpibi-tableau-de-bord-portable',
+				'post_type'      => 'attachment',
+				'post_status'    => 'inherit',
+				'numberposts'    => 1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
+		);
+		$url = $ids ? (string) wp_get_attachment_image_url( $ids[0], 'full' ) : '';
+	}
+	return $url;
+}
+
+/**
+ * Émet og:image et twitter:image quand aucune image de partage n'existe.
+ *
+ * Le filtre `wpseo_opengraph_image` n'a PAS fonctionné (vérifié : aucune balise
+ * produite) — depuis Yoast 14, le présentateur d'image est simplement ignoré
+ * quand il n'y a aucune image, et le filtre n'est donc jamais appliqué. On émet
+ * la balise nous-mêmes, à une priorité postérieure à celle de Yoast.
+ *
+ * GARDE-FOU CONTRE LE DOUBLON : on n'émet rien si la page a une image mise en
+ * avant ou une image sociale saisie dans Yoast — ce sont précisément les deux
+ * cas où Yoast produit déjà la balise. Priorité au contenu de la page.
+ */
+function kpibi_meta_image_partage() {
+	if ( is_singular() ) {
+		$id = get_queried_object_id();
+		if ( has_post_thumbnail( $id ) ) {
+			return;
+		}
+		if ( get_post_meta( $id, '_yoast_wpseo_opengraph-image', true ) ) {
+			return;
+		}
+	}
+	$url = kpibi_url_image_partage();
+	if ( ! $url ) {
+		return;
+	}
+	printf(
+		"<meta property=\"og:image\" content=\"%1\$s\" />\n<meta name=\"twitter:image\" content=\"%1\$s\" />\n",
+		esc_url( $url )
+	);
+}
+add_action( 'wp_head', 'kpibi_meta_image_partage', 20 );
+
+/**
  * Chargement des styles, polices et scripts.
  */
 function kpibi_assets() {
-	// Polices Google (Dubai + Manrope).
+	// Police Google : Manrope uniquement.
+	//
+	// L'URL demandait aussi « Dubai », qui n'est PAS au catalogue Google Fonts
+	// (police Microsoft, non libre) : `?family=Dubai:wght@400` seule renvoie
+	// HTTP 400.
+	//
+	// CE QUI N'EST PAS ARRIVÉ, contrairement à ce qu'on pouvait craindre : une
+	// famille inconnue ne fait PAS échouer une requête multi-familles. Google
+	// l'ignore en silence et sert les autres. Mesuré sur l'ancienne URL complète :
+	// HTTP 200, 30 @font-face, toutes « Manrope », zéro « Dubai » — et dans un
+	// navigateur réel sur les pages du site, document.fonts.check() répond true
+	// pour 400/500/600/700 et le même .woff2 de 24 605 o est téléchargé qu'après
+	// correction. Manrope était donc DÉJÀ servie : le corps de texte n'a jamais
+	// été en police système. Seuls les titres le sont, parce que le CSS déclare
+	// "Dubai" et que cette police n'existe pas côté web — c'est un problème de
+	// CSS, pas d'URL, et sa résolution est une décision de design hors de cette
+	// story (44 déclarations font-family recensées, dont 38 en "Dubai").
+	//
+	// CE QUE CETTE CORRECTION APPORTE RÉELLEMENT : une URL qui dit ce qu'elle
+	// fait, et la 800 en moins — relevée inutilisée au getComputedStyle sur
+	// chaque élément des 12 pages (FR + EN), pseudo-éléments compris, plutôt que
+	// recopiée de l'ancienne liste. Le gain d'octets est marginal et il faut le
+	// dire : la CSS passe de 10 895 à 8 715 o (1 219 → 1 185 o sur le fil), et le
+	// poids des polices téléchargées ne bouge PAS. Google sert Manrope en fonte
+	// VARIABLE : les 4 graisses pointent le même fichier, une graisse de moins
+	// n'est donc pas un téléchargement de moins. Le vrai gain de cette story est
+	// le preconnect ci-dessous.
+	//
+	// Graisses retenues : 400, 500, 600, 700 (aucun élément du thème n'appelle la
+	// 800 ; la 300 n'apparaît que sur des sélecteurs en "Dubai").
 	wp_enqueue_style(
 		'kpibi-fonts',
-		'https://fonts.googleapis.com/css2?family=Dubai:wght@300;400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap',
+		'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap',
 		array(),
 		null
 	);
@@ -72,6 +211,33 @@ function kpibi_assets() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'kpibi_assets' );
+
+/**
+ * Preconnect vers les deux hôtes de Google Fonts.
+ *
+ * WordPress n'ajoute de lui-même qu'un dns-prefetch vers fonts.googleapis.com,
+ * qui ne résout que le DNS. Le preconnect ouvre en plus la connexion TCP et la
+ * poignée de main TLS pendant l'analyse du document. Les deux hôtes comptent :
+ * googleapis.com sert la feuille CSS, gstatic.com sert les .woff2, et c'est
+ * gstatic.com qui est sur le chemin critique du premier rendu du texte.
+ *
+ * crossorigin est OBLIGATOIRE sur gstatic.com et seulement sur lui : les
+ * polices sont récupérées en mode anonyme (CORS), et une connexion préouverte
+ * sans ce drapeau ne serait pas réutilisée — on paierait la poignée de main
+ * deux fois au lieu de zéro. googleapis.com sert du CSS, sans CORS : lui
+ * ajouter crossorigin produirait la même connexion inutilisée.
+ */
+function kpibi_resource_hints( $urls, $relation_type ) {
+	if ( 'preconnect' === $relation_type ) {
+		$urls[] = array( 'href' => 'https://fonts.googleapis.com' );
+		$urls[] = array(
+			'href'        => 'https://fonts.gstatic.com',
+			'crossorigin' => '',
+		);
+	}
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'kpibi_resource_hints', 10, 2 );
 
 /**
  * En-têtes de sécurité essentiels (recommandation « Santé du site »).
@@ -330,6 +496,33 @@ function kpibi_page_url( $slug_fr ) {
  */
 function kpibi_link( $val, $slug_fr ) {
 	$val = trim( (string) $val );
+
+	// « ?page_id=N » : URL non réécrite, saisie avant que les permaliens soient
+	// propres (relevée en QA sur 3 boutons). On la convertit en permalien de la
+	// page N — SURTOUT PAS en repli sur $slug_fr : la destination saisie n'est
+	// pas toujours celle du repli. Exemple réel : sur Tableaux de bord, le
+	// bouton « Voir nos cas clients » porte ?page_id=32 (cas clients) alors que
+	// son repli est « forfait » ; rabattre sur le repli enverrait le visiteur
+	// à l'opposé de ce que le libellé annonce.
+	//
+	// La traduction est prise en compte : sur une page anglaise, on suit la
+	// version traduite de la cible si elle existe, plutôt que de renvoyer vers
+	// la page française.
+	if ( preg_match( '/[?&]page_id=(\d+)/', $val, $m ) ) {
+		$cible = (int) $m[1];
+		if ( function_exists( 'pll_get_post' ) ) {
+			$traduite = pll_get_post( $cible );
+			if ( $traduite ) {
+				$cible = (int) $traduite;
+			}
+		}
+		$permalien = get_permalink( $cible );
+		if ( $permalien ) {
+			return $permalien;
+		}
+	}
+
+	// « xxx.html » : liens de la maquette statique d'origine.
 	if ( '' !== $val && '.html' !== substr( $val, -5 ) ) {
 		return $val;
 	}
