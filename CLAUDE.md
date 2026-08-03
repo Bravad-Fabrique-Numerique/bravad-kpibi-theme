@@ -41,7 +41,30 @@ Implémentation : classe CSS `.steps-grid.cols3` dans `style.css` + logique PHP 
 
 ## i18n / bilingue
 
-Le thème utilise un helper `kpibi__()` (dans `functions.php`) pour les chaînes d'interface, en plus de Polylang pour le contenu éditorial. Toute nouvelle chaîne visible à l'écran doit passer par ce helper, pas être codée en dur — voir story `S10` pour l'audit des chaînes existantes non couvertes.
+Le thème utilise un helper `kpibi__()` (dans `functions.php`) pour les chaînes d'interface, en plus de Polylang pour le contenu éditorial. Toute nouvelle chaîne visible à l'écran doit passer par ce helper, pas être codée en dur.
+
+### ⚠️ La convention est en DEUX temps — c'est la cause racine de plusieurs bogues
+
+Ajouter une chaîne d'interface demande **deux gestes**, et n'en faire qu'un échoue **silencieusement** :
+
+1. **Enregistrer** la source française dans `kpibi_register_strings()` (`functions.php`).
+2. **Appeler** `kpibi__( 'La source française' )` dans le gabarit.
+
+Puis, en CMS : saisir la traduction anglaise dans **Langues > Traductions**. Aucune API ne permet de la poser depuis le code — une story i18n n'est donc **jamais fermée par un commit seul**.
+
+**Les deux façons de se tromper, toutes deux vécues :**
+
+- *Appeler sans enregistrer* — la chaîne paraît traduisible et ne l'est pas. Elle n'apparaît pas dans Langues > Traductions, et la page anglaise sert le texte français. C'est le défaut corrigé par `KPIBI-31` (10 chaînes), introduit par `KPIBI-8`.
+- *Contourner le helper* — un ternaire sur `pll_current_language()` affiche la bonne langue mais échappe au CMS : le client ne peut plus corriger le texte. C'est le défaut corrigé par `KPIBI-33`.
+
+**L'appariement se fait sur la chaîne EXACTE**, octet pour octet. Une espace insécable, un guillemet `«` au lieu de `"`, une apostrophe typographique au lieu d'une droite, et Polylang ne fait pas le lien — sans erreur, sans avertissement. Ne **jamais retaper** une chaîne pour l'enregistrer : l'extraire du gabarit (le tokenizer PHP `token_get_all()` est fiable pour ça), et prouver l'appariement par comparaison stricte des deux ensembles — enregistrées vs appelées — plutôt que par relecture.
+
+**Contrôle utile avant de conclure une story i18n :** l'ensemble des chaînes enregistrées et celui des chaînes appelées doivent être **identiques dans les deux sens**. Une chaîne enregistrée mais jamais appelée est une entrée morte qui encombre l'écran des traductions.
+
+**Exceptions légitimes à `pll_current_language()`** — ne pas les « corriger » :
+
+- `footer.php` — choisir l'identifiant du formulaire Contact Form 7 selon la langue (`b8cc433` en FR, `39e9e84` en EN). Ce n'est pas du texte.
+- `functions.php`, `kpibi_link()` — suivre la traduction d'une page.
 
 ## Sécurité — connu et à corriger avant prod
 
