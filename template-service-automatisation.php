@@ -191,7 +191,7 @@ while ( have_posts() ) :
 				<p style="margin-bottom:0;"><strong style="color:var(--slate-900);"><?php echo esc_html( kpibi_f( 'svcauto_depart_texte3_fort', "L'objectif est clair :" ) ); ?></strong> <?php echo esc_html( kpibi_f( 'svcauto_depart_texte3_fin', 'augmenter votre capacité, réduire vos coûts et améliorer votre prévisibilité, sans devoir embaucher proportionnellement.' ) ); ?></p>
 			</div>
 			<?php if ( $kpibi_svcauto_depart_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_svcauto_depart_img ); ?>" alt="" class="split-img reveal reveal-delay-1" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_svcauto_depart_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_svcauto_depart_img, kpibi__( "Illustration du point de départ d'une automatisation" ) ) ); ?>" class="split-img reveal reveal-delay-1" loading="lazy">
 			<?php else : ?>
 				<div class="split-img reveal reveal-delay-1" style="background:#ECEAE3;" aria-hidden="true"></div>
 			<?php endif; ?>
@@ -233,7 +233,7 @@ while ( have_posts() ) :
 	<section class="section-split">
 		<div class="container"><div class="split-inner">
 			<?php if ( $kpibi_svcauto_techno_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_svcauto_techno_img ); ?>" alt="" class="split-img reveal" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_svcauto_techno_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_svcauto_techno_img, kpibi__( 'Illustration des technologies utilisées' ) ) ); ?>" class="split-img reveal" loading="lazy">
 			<?php else : ?>
 				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
 			<?php endif; ?>
@@ -319,7 +319,7 @@ while ( have_posts() ) :
 		<div class="container"><div class="split-inner">
 			<?php $kpibi_pourqui_img = kpibi_f( 'pourqui_image', '' ); ?>
 			<?php if ( $kpibi_pourqui_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="" class="split-img reveal" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourqui_img, kpibi__( 'Illustration de la section « Pour qui »' ) ) ); ?>" class="split-img reveal" loading="lazy">
 			<?php else : ?>
 				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
 			<?php endif; ?>

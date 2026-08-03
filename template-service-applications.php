@@ -178,7 +178,7 @@ while ( have_posts() ) :
 	<section class="section-split bg-light">
 		<div class="container"><div class="split-inner">
 			<?php if ( $kpibi_svcapp_pourquoi_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_svcapp_pourquoi_img ); ?>" alt="" class="split-img reveal" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_svcapp_pourquoi_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_svcapp_pourquoi_img, kpibi__( 'Illustration de la section « Pourquoi des applications sur mesure »' ) ) ); ?>" class="split-img reveal" loading="lazy">
 			<?php else : ?>
 				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
 			<?php endif; ?>
@@ -298,7 +298,7 @@ while ( have_posts() ) :
 		<div class="container"><div class="split-inner">
 			<?php $kpibi_pourqui_img = kpibi_f( 'pourqui_image', '' ); ?>
 			<?php if ( $kpibi_pourqui_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="" class="split-img reveal" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourqui_img, kpibi__( 'Illustration de la section « Pour qui »' ) ) ); ?>" class="split-img reveal" loading="lazy">
 			<?php else : ?>
 				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
 			<?php endif; ?>

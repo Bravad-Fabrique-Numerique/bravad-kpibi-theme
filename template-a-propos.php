@@ -165,7 +165,7 @@ while ( have_posts() ) :
 				</div>
 				<?php $kpibi_force_img = kpibi_f( 'force_image', '' ); ?>
 				<?php if ( $kpibi_force_img ) : ?>
-					<img src="<?php echo esc_url( $kpibi_force_img ); ?>" alt="" class="split-img reveal reveal-delay-1" loading="lazy">
+					<img src="<?php echo esc_url( $kpibi_force_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_force_img, kpibi__( 'Illustration de la section « Notre force »' ) ) ); ?>" class="split-img reveal reveal-delay-1" loading="lazy">
 				<?php else : ?>
 					<div class="split-img reveal reveal-delay-1" style="background:#ECEAE3;" aria-hidden="true"></div>
 				<?php endif; ?>

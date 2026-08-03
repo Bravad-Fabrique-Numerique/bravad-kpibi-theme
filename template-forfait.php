@@ -64,7 +64,7 @@ get_header();
 			<div class="pourquoi-visual reveal">
 				<?php $kpibi_pourquoi_img = kpibi_f( 'forfait_pourquoi_image', '' ); ?>
 				<?php if ( $kpibi_pourquoi_img ) : ?>
-					<img src="<?php echo esc_url( $kpibi_pourquoi_img ); ?>" alt="" class="pourquoi-img" loading="lazy">
+					<img src="<?php echo esc_url( $kpibi_pourquoi_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourquoi_img, kpibi__( 'Illustration de la section « Pourquoi cette approche »' ) ) ); ?>" class="pourquoi-img" loading="lazy">
 				<?php else : ?>
 					<div class="pourquoi-img" style="background:#1A1A1A;" aria-hidden="true"></div>
 				<?php endif; ?>
@@ -122,7 +122,7 @@ get_header();
 		<div class="container"><div class="split-inner">
 			<?php $kpibi_split_img = kpibi_f( 'forfait_transparence_image', '' ); ?>
 			<?php if ( $kpibi_split_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_split_img ); ?>" alt="" class="split-img reveal" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_split_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_split_img, kpibi__( 'Illustration de la section « Transparence »' ) ) ); ?>" class="split-img reveal" loading="lazy">
 			<?php else : ?>
 				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
 			<?php endif; ?>

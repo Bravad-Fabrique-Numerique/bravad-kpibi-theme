@@ -75,7 +75,7 @@ $kpibi_hero_img = kpibi_f( 'hero_image', '' );
 				?>
 				<a href="<?php echo esc_url( $url ); ?>" class="pilier-card reveal reveal-delay-<?php echo (int) $i; ?>">
 					<?php if ( $pimg ) : ?>
-						<img src="<?php echo esc_url( $pimg ); ?>" alt="" class="pilier-img" loading="lazy">
+						<img src="<?php echo esc_url( $pimg ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $pimg, kpibi_f( "pilier{$i}_titre", $d[0] ) ) ); ?>" class="pilier-img" loading="lazy">
 					<?php else : ?>
 						<div class="pilier-img" style="background:#ECEAE3;" aria-hidden="true"></div>
 					<?php endif; ?>
@@ -97,7 +97,7 @@ $kpibi_hero_img = kpibi_f( 'hero_image', '' );
 		<div class="pourquoi-visual reveal">
 			<?php $kpibi_pourquoi_img = kpibi_f( 'pourquoi_image', '' ); ?>
 			<?php if ( $kpibi_pourquoi_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_pourquoi_img ); ?>" alt="" class="pourquoi-img" loading="lazy">
+				<img src="<?php echo esc_url( $kpibi_pourquoi_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourquoi_img, kpibi__( 'Illustration de la section « Pourquoi KPIBI »' ) ) ); ?>" class="pourquoi-img" loading="lazy">
 			<?php else : ?>
 				<div class="pourquoi-img" style="background:#1A1A1A;" aria-hidden="true"></div>
 			<?php endif; ?>

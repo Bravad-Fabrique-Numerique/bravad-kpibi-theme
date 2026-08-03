@@ -50,7 +50,15 @@ get_header();
 					?>
 					<a href="<?php the_permalink(); ?>" class="blog-card reveal">
 						<?php if ( has_post_thumbnail() ) : ?>
-							<img src="<?php echo esc_url( get_the_post_thumbnail_url( get_the_ID(), 'medium_large' ) ); ?>" alt="" class="blog-card-img" loading="lazy">
+							<?php
+							// Repli : le titre de l'article, qui décrit la vignette. Un article
+							// sans titre resterait sans alt : libellé générique dans ce cas.
+							$kpibi_vignette_repli = trim( (string) get_the_title() );
+							if ( '' === $kpibi_vignette_repli ) {
+								$kpibi_vignette_repli = kpibi__( 'Article du blogue KPIBI' );
+							}
+							?>
+							<img src="<?php echo esc_url( get_the_post_thumbnail_url( get_the_ID(), 'medium_large' ) ); ?>" alt="<?php echo esc_attr( kpibi_thumb_alt( get_the_ID(), $kpibi_vignette_repli ) ); ?>" class="blog-card-img" loading="lazy">
 						<?php endif; ?>
 						<div class="blog-card-body">
 							<?php
