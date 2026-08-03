@@ -102,7 +102,7 @@ a { text-decoration: none; color: inherit; }
 .page-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center 35%; }
 .page-hero-gradient { position: absolute; inset: 0; background: linear-gradient(105deg, rgba(8,8,8,0.96) 0%, rgba(8,8,8,0.90) 50%, rgba(8,8,8,0.55) 100%); }
 .page-hero-inner { position: relative; z-index: 2; padding: 88px 0 80px; max-width: 680px; }
-.page-hero-label { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold-400); margin-bottom: 20px; border: 1px solid rgba(212,175,106,0.30); border-radius: 99px; padding: 4px 14px; }
+.page-hero-label { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold-400); margin-bottom: 20px; border: 1px solid rgba(212,175,106,0.30); border-radius: 99px; padding: 4px 14px; }
 .page-hero h1 { font-family: "Dubai", sans-serif; font-size: clamp(36px, 5vw, 58px); font-weight: 300; line-height: 1.1; letter-spacing: -0.3px; color: var(--white); margin-bottom: 20px; }
 .page-hero h1 strong { font-weight: 500; color: var(--gold-400); }
 .page-hero-sub { font-size: 17px; color: rgba(255,255,255,0.62); line-height: 1.78; max-width: 520px; margin-bottom: 36px; }
@@ -458,6 +458,101 @@ header { position: sticky; top: 0; z-index: 100; }
    car .section-cta p (margin-top:0) l'emportait sur .cta-guarantee. */
 .section-cta .cta-guarantee { margin-top: 24px; }
 
+/* Note sous la rangée « aide financière » du Forfait (KPIBI-18, constat QA #16).
+   Cause : .aide-note (template-forfait.php, l.191) n'avait AUCUNE règle CSS, et
+   le reset de la l.25 met toutes les marges à 0. La note se retrouvait donc à
+   exactement 0px du bas de la rangée des 3 blocs — mesuré. Ce n'est pas le vol
+   de spécificité des pastilles, c'est une règle simplement absente : d'où un
+   correctif distinct. 40px reprend l'échelle de la section en restant plus
+   serré : l'écart en-tête → grille mesure 64px (margin-bottom 64px de
+   .section-header et margin-top 56px de .steps-grid se fusionnent, le plus
+   grand gagne — ce n'est donc pas 56 + 64). La note reste plus proche de la
+   rangée qu'elle commente qu'une nouvelle sous-section ne le serait. */
+.aide-note { margin-top: 40px; }
+
+/* Titre du CTA final : « peut-être » séparé en fin de ligne (KPIBI-18, constat
+   QA #9, page Optimisation).
+
+   Porteur du texte : .section-cta h2 (max-width 620px, l.201), PAS .section-cta
+   p (480px, l.203) — le mot est dans le <h2>, à l'identique dans les 3 gabarits
+   de service (template-service.php l.246, -applications l.347, -automatisation
+   l.368) et dans le défaut ACF service_cta_titre.
+
+   POURQUOI PAS UN SIMPLE ÉLARGISSEMENT. Le titre est en clamp(30px, 4vw, 52px) :
+   le point de coupure dépend de la largeur de fenêtre. Balayage caractère par
+   caractère — une mesure par mot ne voit pas les coupures INTERNES à un mot, le
+   rect du mot entier commençant sur la 1re ligne — sur les 6 pages qui ont un
+   CTA × 18 largeurs de 390 à 2560px, soit 108 cas :
+     - 620px (état actuel) : 47 cas en défaut. Le défaut n'est pas propre à
+       Optimisation — Forfait (« est »), Automatisation (« équipes? ») et
+       Applications (« manque. ») laissent aussi un mot seul sur sa ligne en
+       desktop ; et entre 1100 et 1200px « peut-être » est carrément SCINDÉ à son
+       trait d'union (« peut- » / « être »), qui est une opportunité de coupure
+       de ligne légitime (UAX #14).
+     - 660 à 720px : PIRE — la scission au trait d'union apparaît à toutes les
+       largeurs desktop, là où 620px laissait au moins le mot entier. « Élargir
+       un peu » tombe précisément dans cette bande.
+     - 760 à 840px : Optimisation est réglée, mais Tableaux de bord casse à son
+       tour (« histoire. » isolé). Aucune valeur unique de max-width n'est saine
+       pour les 6 titres à la fois : chacun aurait sa largeur idéale.
+   Un max-width ne peut que DÉPLACER la coupure, jamais garantir qu'aucun titre
+   ne se coupe mal. Et le site est bilingue (Polylang) : une largeur réglée sur
+   les chaînes françaises ne transporte rien vers les titres anglais.
+
+   D'OÙ text-wrap: balance, qui répartit les lignes d'un bloc court au lieu de
+   remplir la première au maximum, sans valeur réglée à la main. Ignorée par un
+   navigateur qui ne la connaît pas — le rendu retombe alors sur celui
+   d'aujourd'hui, rien ne casse. Elle est aussi insensible aux métriques de la
+   police, ce qui compte ici : les titres ne sont pas rendus par Dubai mais par
+   la police de repli du système (constat distinct, suivi en KPIBI-26 — ne pas
+   le traiter ici).
+
+   CE QUE « DÉFAUT » VEUT DIRE ICI. Le balayage compte comme défaut (a) un mot
+   SCINDÉ entre deux lignes, et (b) un mot laissé SEUL sur sa ligne par le
+   retour automatique — y compris sur la DERNIÈRE ligne. Cette veuve de
+   dernière ligne est précisément la classe du constat QA (« est », « manque. »)
+   et elle n'était pas comptée auparavant : le balayage initial ignorait la
+   dernière ligne, ce qui est la seule raison pour laquelle il annonçait 0.
+   Un segment court que l'auteur a lui-même placé sur sa ligne avec un <br>
+   (« Parlons-en. ») n'est PAS un défaut : c'est la mise en page voulue.
+
+   SOUS CETTE DÉFINITION, AUCUNE DES DEUX LARGEURS TESTÉES N'ATTEINT 0 au-dessus
+   de 1200px. Balayage 1200 → 2560px par pas de 10px (137 largeurs) sur les
+   9 pages FR qui portent ce sélecteur — et non 6 : a-propos, cas-clients et
+   blogue en ont un aussi — soit 1233 cas :
+     - 620px + balance          : 280 cas en défaut ;
+     - 800px + balance (media query, retirée ici) : 398.
+   L'élargissement ne répare donc pas, il DÉPLACE : il règle l'accueil au prix
+   de cas-clients (« vous. », 1220–2560px) et d'automatisation (« gratuite. »,
+   1240–2560px). On garde la configuration la moins mauvaise, sans media query,
+   et on ne touche donc pas à la largeur du CTA des gabarits qui partagent ce
+   sélecteur. Côté EN (8 pages × 69 largeurs) : 0 avec la media query contre 69
+   sans, tous sur en-home — mais en-home affiche encore le titre FRANÇAIS non
+   traduit de l'accueil, donc ce n'est pas un cas indépendant et l'écart ne
+   survivra pas à la traduction.
+
+   DÉFAUTS RÉSIDUELS — C'EST DU CONTENU, PAS DE LA CSS. Il reste accueil
+   (« vous. ») et dashboards (« moment. ») à toutes les largeurs, plus
+   automatisation entre 1200 et 1250px. Cause : le <br> est CODÉ EN DUR dans le
+   gabarit entre les deux champs ACF du titre (front-page.php l.174,
+   template-service.php l.246, et de même dans les autres gabarits de CTA). Il
+   coupe le titre en deux segments, et l'équilibrage ne se fait pas au travers :
+   le segment « Une feuille de route pour vous. » se répartit en « … pour » /
+   « vous. » au lieu de « Une feuille de route / pour vous. ». Aucune valeur de
+   max-width ne réglera cela — le rendu est d'ailleurs IDENTIQUE à 620 et à
+   800px sur dashboards. À traiter avec le client, pas ici.
+
+   FIABILITÉ DES CHIFFRES. Les 1233 cas ci-dessus ont été mesurés sur la CSS de
+   ce dépôt, vérification faite. Les chiffres antérieurs (47 cas en défaut à
+   620px, les bandes 660–720 et 760–840, le « 0 défaut sur 108 ») viennent d'un
+   harnais qui avait deux failles : sous `php -S`, auto_prepend_file passé en -d
+   n'est PAS appliqué aux requêtes, si bien que les surcharges d'URL étaient
+   inertes et que la page chargeait style.css DEPUIS LA PRODUCTION au lieu du
+   dépôt ; et un <br> sans espace autour était compté comme un mot scindé. Ces
+   chiffres sont conservés ci-dessus pour le raisonnement, mais ils n'ont pas
+   été revérifiés : ne pas rouvrir le sujet en s'y fiant. */
+.section-cta h2 { text-wrap: balance; }
+
 /* ===== PASTILLES — COMPORTEMENT PARTAGÉ (KPIBI-17) =====
    Les « pastilles » (libellés arrondis en majuscules au-dessus des titres de
    section) sont déclarées par 7 classes distinctes qui redupliquent chacune
@@ -502,7 +597,41 @@ header { position: sticky; top: 0; z-index: 100; }
 	   héritable (1,65 du body) ou volé aux règles de conteneur (1,7 / 1,8)
 	   étire la pastille dès qu'elle passe sur 2 lignes. */
 	line-height: 1.35;
+	/* Taille reprise aux règles de conteneur (KPIBI-18). Les 7 classes déclarent
+	   toutes 12px — .page-hero-label incluse depuis l'harmonisation de la l.105,
+	   elle seule était à 11px — donc la valeur partagée est ici légitime et ne
+	   masque aucune exception. Mesuré avant correction : 17px sous .section-header
+	   et .section-cta, 16px sous .pourquoi-content et .split-content, contre 12px
+	   pour .hero-label et .cas-tag que le vol n'atteint pas. On restaure la valeur
+	   DÉCLARÉE (12px) : elle aligne les cas volés sur les cas déjà corrects. */
+	font-size: 12px;
 }
+
+/* Marges basses reprises à 0-2-0 (KPIBI-18) — suite du même vol de propriétés.
+   Chaque pastille garde SA marge déclarée : on répare le vol, on ne redessine
+   pas le rythme vertical. Ce sont les valeurs des l.122 et 200, pas une
+   uniformisation entre pastilles.
+
+   Seules .section-label et .cta-label sont concernées, parce qu'elles seules
+   vivent dans les conteneurs qualifiés par un élément. Mesuré avant correction :
+     .section-label  dans .section-header    → 0px   (« margin: 0 auto » de la
+                     l.126, dont le raccourci remet la marge basse à zéro : la
+                     pastille se retrouvait COLLÉE au titre — c'est le constat
+                     QA #6, « l'espace n'est pas le même qu'ailleurs »)
+     .section-label  dans .pourquoi-content  → 44px  (l.156)
+     .section-label  dans .split-content     → 24px  (l.222)
+     .cta-label      dans .section-cta       → 44px  (« margin: 0 auto 44px », l.203)
+   Les quatre valeurs volées étaient donc différentes selon le conteneur, ce qui
+   est précisément l'incohérence signalée. Après reprise, .section-label vaut
+   16px partout et .cta-label 20px partout.
+
+   Non listées ici volontairement : .hero-label (28px), .page-hero-label (20px)
+   et .cas-tag (16px) rendent déjà leur valeur déclarée — aucune règle de
+   conteneur ne les atteint (parents .hero-inner / .page-hero-inner, et .cas-tag
+   est un <span> alors que les règles voleuses ciblent p). Les redéclarer serait
+   du bruit. .forfait-badge n'est utilisée dans aucun gabarit. */
+.section-label.section-label { margin-bottom: 16px; }
+.cta-label.cta-label { margin-bottom: 20px; }
 
 /* Couleurs des pastilles reprises à la même spécificité (0-2-0), car les
    règles de conteneur ci-dessus écrasaient la couleur déclarée : mesuré à
