@@ -8,9 +8,26 @@
 $kpibi_linkedin   = esc_url( get_theme_mod( 'kpibi_linkedin_url', 'https://www.linkedin.com/company/kpibi' ) );
 $kpibi_email      = sanitize_email( get_theme_mod( 'kpibi_email', 'info@kpibi.com' ) );
 $kpibi_footer_is_en = function_exists( 'pll_current_language' ) && 'en' === pll_current_language();
+/*
+ * Descriptif et copyright, une langue = un réglage.
+ *
+ * Les deux textes ANGLAIS étaient codés en dur ici alors que leurs
+ * équivalents français venaient du Personnalisateur (KPIBI-33) : Phil
+ * modifiait le français, l'anglais ne suivait pas, et rien ne lui permettait
+ * de le corriger — le pied de page anglais se désynchronisait en silence.
+ *
+ * Le test de langue SURVIT : il ne choisit plus un texte mais le réglage à
+ * lire. Les valeurs de repli reproduisent exactement les textes précédents,
+ * donc un champ laissé vide ne change rien à l'écran.
+ *
+ * L'année du copyright est dynamique TANT QUE le champ n'est pas modifié —
+ * ensuite elle se fige sur ce que le client a saisi. Ce comportement est
+ * celui du français : la parité est délibérée (voir KPIBI-33), et le
+ * Personnalisateur en avertit désormais dans les deux langues.
+ */
 if ( $kpibi_footer_is_en ) {
-	$kpibi_desc      = "Quebec-based specialists in business intelligence for SMEs. KPI dashboards, process automation and custom business applications.";
-	$kpibi_copyright = '© ' . gmdate( 'Y' ) . ' KPIBI. All rights reserved. Quebec, Canada.';
+	$kpibi_desc      = get_theme_mod( 'kpibi_footer_desc_en', "Quebec-based specialists in business intelligence for SMEs. KPI dashboards, process automation and custom business applications." );
+	$kpibi_copyright = get_theme_mod( 'kpibi_copyright_en', '© ' . gmdate( 'Y' ) . ' KPIBI. All rights reserved. Quebec, Canada.' );
 } else {
 	$kpibi_desc      = get_theme_mod( 'kpibi_footer_desc', "Spécialiste québécois en intelligence d'affaires pour PME. Tableaux de bord KPI, automatisation des processus et développement d'applications sur mesure." );
 	$kpibi_copyright = get_theme_mod( 'kpibi_copyright', '© ' . gmdate( 'Y' ) . ' KPIBI. Tous droits réservés. Québec, Canada.' );
@@ -40,7 +57,7 @@ if ( '' === $kpibi_privacy_url ) {
 // Lien vers la politique de témoins (cookies) générée par Complianz.
 $kpibi_cookie_page  = get_page_by_path( 'politique-de-temoins-ca' );
 $kpibi_cookie_url   = $kpibi_cookie_page ? get_permalink( $kpibi_cookie_page ) : '';
-$kpibi_cookie_label = $kpibi_footer_is_en ? 'Cookie Policy' : 'Politique de cookies';
+$kpibi_cookie_label = kpibi__( 'Politique de cookies' );
 ?>
 </main>
 
@@ -106,9 +123,9 @@ if ( function_exists( 'shortcode_exists' ) && shortcode_exists( 'contact-form-7'
 	$kpibi_is_en  = function_exists( 'pll_current_language' ) && 'en' === pll_current_language();
 	$kpibi_cf7_id = $kpibi_is_en ? '39e9e84' : 'b8cc433';
 	$kpibi_cf7_id = apply_filters( 'kpibi_consultation_form_id', $kpibi_cf7_id );
-	$kpibi_modal_eye   = $kpibi_is_en ? 'First step' : 'Première étape';
-	$kpibi_modal_title = $kpibi_is_en ? 'Book a free consultation' : 'Planifier une consultation gratuite';
-	$kpibi_modal_close = $kpibi_is_en ? 'Close' : 'Fermer';
+	$kpibi_modal_eye   = kpibi__( 'Première étape' );
+	$kpibi_modal_title = kpibi__( 'Planifier une consultation gratuite' );
+	$kpibi_modal_close = kpibi__( 'Fermer' );
 	?>
 	<div class="kpibi-modal" id="kpibi-form-modal" aria-hidden="true">
 		<div class="kpibi-modal-overlay" data-kpibi-close></div>
