@@ -112,7 +112,16 @@ if ( function_exists( 'shortcode_exists' ) && shortcode_exists( 'contact-form-7'
 	?>
 	<div class="kpibi-modal" id="kpibi-form-modal" aria-hidden="true">
 		<div class="kpibi-modal-overlay" data-kpibi-close></div>
-		<div class="kpibi-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="kpibi-modal-title">
+		<?php
+		/*
+		 * `tabindex="-1"` rend le dialogue focalisable par script sans l'ajouter à
+		 * l'ordre de tabulation. À l'ouverture, main.js y place le focus PLUTÔT que
+		 * sur le premier champ : le lecteur d'écran annonce le dialogue et son
+		 * titre, mais le clavier virtuel ne s'ouvre pas — c'est lui qui rendait le
+		 * bouton d'envoi inatteignable sur téléphone.
+		 */
+		?>
+		<div class="kpibi-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="kpibi-modal-title" tabindex="-1">
 			<button type="button" class="kpibi-modal-close" data-kpibi-close aria-label="<?php echo esc_attr( $kpibi_modal_close ); ?>">&times;</button>
 			<p class="kpibi-modal-eyebrow"><?php echo esc_html( $kpibi_modal_eye ); ?></p>
 			<h2 id="kpibi-modal-title" class="kpibi-modal-title"><?php echo esc_html( $kpibi_modal_title ); ?></h2>
