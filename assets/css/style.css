@@ -431,7 +431,36 @@ footer { background: #050505; padding: 60px 0 32px; border-top: 1px solid rgba(2
 .footer-brand .custom-logo { max-height: 36px; }
 
 /* ===== MODALE DU FORMULAIRE DE CONSULTATION ===== */
-.kpibi-modal { position: fixed; inset: 0; z-index: 1000; display: none; align-items: flex-start; justify-content: center; padding: 5vh 16px; overflow-y: auto; }
+/* Hauteur explicite au lieu de `inset: 0`. `inset: 0` se résout sur le LARGE
+   viewport iOS (barres du navigateur masquées) : quand les barres sont visibles,
+   le bas de la modale passe dessous. `100dvh` suit le viewport réellement
+   affiché ; `100vh` reste en repli pour les navigateurs sans unités dynamiques.
+   Le calage horizontal reprend left/right (et non 100vw) pour ne rien changer au
+   rendu bureau en présence d'une barre de défilement.
+   `overscroll-behavior: contain` empêche le défilement de se propager à la page
+   quand on atteint le haut ou le bas de la modale (chaînage tactile iOS). */
+.kpibi-modal { position: fixed; left: 0; right: 0; top: 0; height: var(--kpibi-modal-h, 100vh); z-index: 1000; display: none; align-items: flex-start; justify-content: center; padding: 5vh 16px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+@supports (height: 100dvh) { .kpibi-modal { height: var(--kpibi-modal-h, 100dvh); } }
+/* `--kpibi-modal-h` est posée par main.js depuis window.visualViewport, et elle
+   est INDISPENSABLE au cas d'usage principal : le clavier virtuel ne réduit ni
+   `vh` ni `dvh`. Sur iOS comme sur Android (interactive-widget=resizes-visual
+   par défaut), il ne rétrécit que le « visual viewport ». Une modale calée sur
+   dvh garde donc toute sa hauteur, son bas reste sous le clavier, et comme un
+   conteneur ne défile jamais au-delà de sa propre fin, le bouton d'envoi devient
+   inatteignable. Mesuré à 360x640 avec un clavier de 300 px : bas du bouton à
+   568 px pour une zone visible de 340 px. En suivant visualViewport, la modale
+   rétrécit avec le clavier, déborde davantage, et le bouton revient au
+   défilement. Les unités dvh/vh restent le repli sans JS. */
+/* Marge basse garantie : 5vh comme avant, mais jamais moins de 24 px, quelle que
+   soit la hauteur de l'écran (à 360x640, 5vh ne fait que 32 px).
+   Le terme env() est un filet, PAS ce qui protège aujourd'hui de la barre
+   d'accueil : sur iOS, env(safe-area-inset-*) ne vaut autre chose que 0 que si la
+   page déclare `viewport-fit=cover`, ce que le thème ne fait pas. Avec le
+   `viewport-fit=auto` par défaut, c'est iOS lui-même qui retire les zones sûres
+   du viewport de mise en page, donc rien ne passe sous la barre d'accueil. La
+   règle vaut donc max(5vh, 24px) en pratique, et se mettrait à jour d'elle-même
+   si le thème passait un jour en plein écran. */
+.kpibi-modal { padding-bottom: max(5vh, env(safe-area-inset-bottom) + 24px); }
 .kpibi-modal.is-open { display: flex; }
 .kpibi-modal-overlay { position: fixed; inset: 0; background: rgba(15, 12, 6, 0.62); backdrop-filter: blur(3px); }
 .kpibi-modal-dialog { position: relative; z-index: 1; width: 100%; max-width: 560px; background: var(--white); border-radius: 18px; border-top: 3px solid var(--gold-500); padding: 40px 40px 32px; box-shadow: 0 24px 60px rgba(20, 15, 5, 0.28); animation: kpibiModalIn 0.28s cubic-bezier(.22,1,.36,1); }

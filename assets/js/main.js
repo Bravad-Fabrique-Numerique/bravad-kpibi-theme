@@ -28,29 +28,141 @@ document.querySelectorAll(".nav-dropdown").forEach(dd => {
    la modale existe (Contact Form 7 actif). */
 const kpibiModal = document.getElementById("kpibi-form-modal");
 if (kpibiModal) {
+  const kpibiDialog = kpibiModal.querySelector(".kpibi-modal-dialog");
   let kpibiLastFocus = null;
-  const openModal = () => {
-    kpibiLastFocus = document.activeElement;
+  let kpibiScrollY = 0;
+
+  /* Verrou de défilement de l'arrière-plan.
+     `body { overflow: hidden }` seul ne retient PAS le défilement tactile sur
+     Safari iOS. On fixe donc le corps de page en le décalant de sa position de
+     défilement courante, ce qui l'immobilise réellement, puis on restaure la
+     position exacte à la fermeture (sinon la page saute en haut). */
+  const kpibiLockScroll = () => {
+    kpibiScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${kpibiScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+  };
+  const kpibiUnlockScroll = () => {
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    document.body.style.overflow = "";
+    window.scrollTo(0, kpibiScrollY);
+  };
+
+  /* Hauteur de la modale alignée sur le viewport RÉELLEMENT visible.
+     Le clavier virtuel ne réduit ni `vh` ni `dvh` : il ne rétrécit que le
+     « visual viewport ». Sans cette synchronisation, la modale garde toute sa
+     hauteur, son bas reste caché sous le clavier, et comme un conteneur ne
+     défile jamais au-delà de sa propre fin, le bouton d'envoi est hors
+     d'atteinte — c'est le défaut principal du ticket. En suivant
+     visualViewport, la modale rétrécit avec le clavier et le bouton redevient
+     accessible au défilement. Sans l'API, la CSS retombe sur dvh puis vh. */
+  const kpibiVV = window.visualViewport || null;
+  const kpibiSyncHeight = () => {
+    if (!kpibiVV) return;
+    kpibiModal.style.setProperty("--kpibi-modal-h", `${Math.round(kpibiVV.height)}px`);
+  };
+  const kpibiClearHeight = () => kpibiModal.style.removeProperty("--kpibi-modal-h");
+
+  /* Éléments focalisables du dialogue, dans l'ordre du document. Le dialogue
+     lui-même porte tabindex="-1" et est donc exclu — il reçoit le focus par
+     script, pas par tabulation. */
+  const KPIBI_FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const kpibiFocusables = () => Array.from(kpibiDialog.querySelectorAll(KPIBI_FOCUSABLE))
+    .filter(el => el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0);
+
+  /* `declencheur` est passé explicitement : un clic tactile ne donne pas
+     forcément le focus au lien (c'est le cas sur iOS Safari), donc
+     `document.activeElement` ne permet pas de retrouver de façon fiable l'élément
+     à qui rendre le focus à la fermeture. */
+  const openModal = (declencheur) => {
+    kpibiLastFocus = declencheur || document.activeElement;
     kpibiModal.classList.add("is-open");
     kpibiModal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-    const focusable = kpibiModal.querySelector("input, textarea, select, button");
-    if (focusable) setTimeout(() => focusable.focus(), 50);
+    kpibiLockScroll();
+    kpibiSyncHeight();
+    if (kpibiVV) {
+      kpibiVV.addEventListener("resize", kpibiSyncHeight);
+      kpibiVV.addEventListener("scroll", kpibiSyncHeight);
+    }
+    /* On NE met PAS le focus sur un champ de saisie : sur iOS/Android cela ouvre
+       le clavier virtuel, qui recouvre la moitié basse de l'écran et masquait le
+       bouton d'envoi. Le focus va sur le dialogue : le lecteur d'écran annonce
+       bien le rôle et le titre, sans clavier. */
+    if (kpibiDialog) setTimeout(() => kpibiDialog.focus(), 50);
   };
   const closeModal = () => {
     kpibiModal.classList.remove("is-open");
     kpibiModal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-    if (kpibiLastFocus) kpibiLastFocus.focus();
+    kpibiUnlockScroll();
+    if (kpibiVV) {
+      kpibiVV.removeEventListener("resize", kpibiSyncHeight);
+      kpibiVV.removeEventListener("scroll", kpibiSyncHeight);
+    }
+    kpibiClearHeight();
+    if (kpibiLastFocus && typeof kpibiLastFocus.focus === "function") kpibiLastFocus.focus();
   };
   // Déclencheurs : bouton CTA de nav, boutons #cta, boutons courriel (.btn mailto).
   const kpibiCtaSelector = ".nav-cta, a.btn[href='#cta'], a.btn[href$='/#cta'], a.btn[href^='mailto:']";
   document.querySelectorAll(kpibiCtaSelector).forEach(btn => {
-    btn.addEventListener("click", e => { e.preventDefault(); openModal(); });
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      /* Le menu mobile contient lui aussi un CTA « Consultation gratuite ». On le
+         referme avant d'ouvrir la modale : deux conteneurs aria-modal ouverts en
+         même temps sont invalides, et son propre verrou de défilement entrerait en
+         conflit avec celui de la modale. */
+      if (mMenu && mMenu.classList.contains("open")) closeMenu();
+      openModal(btn);
+    });
   });
   kpibiModal.querySelectorAll("[data-kpibi-close]").forEach(el => el.addEventListener("click", closeModal));
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && kpibiModal.classList.contains("is-open")) closeModal(); });
-  // Fermer automatiquement après un envoi réussi du formulaire.
+
+  document.addEventListener("keydown", e => {
+    if (!kpibiModal.classList.contains("is-open")) return;
+    if (e.key === "Escape") { closeModal(); return; }
+    /* Piège à focus : le dialogue déclare aria-modal="true", la tabulation doit
+       donc y rester confinée — sinon la déclaration est fausse et l'utilisateur
+       au clavier se retrouve dans la page derrière, sans repère. */
+    if (e.key !== "Tab") return;
+    const list = kpibiFocusables();
+    if (!list.length) { e.preventDefault(); if (kpibiDialog) kpibiDialog.focus(); return; }
+    const first = list[0];
+    const last = list[list.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey) {
+      if (active === first || active === kpibiDialog || !kpibiDialog.contains(active)) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else if (active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  /* Le bandeau de réponse de Contact Form 7 est rendu en BAS du formulaire :
+     sur petit écran il tombe hors du champ de vision et l'utilisateur ne sait pas
+     si son envoi a fonctionné. On l'amène dans la vue après chaque issue possible.
+     `block: "nearest"` défile le conteneur de la modale, pas la page. */
+  const kpibiSoftScroll = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  ["wpcf7invalid", "wpcf7spam", "wpcf7mailfailed", "wpcf7mailsent"].forEach(evt => {
+    document.addEventListener(evt, () => {
+      const out = kpibiModal.querySelector(".wpcf7-response-output");
+      if (!out) return;
+      requestAnimationFrame(() => {
+        out.scrollIntoView({ block: "nearest", behavior: kpibiSoftScroll ? "smooth" : "auto" });
+      });
+    });
+  });
+
+  // Fermer automatiquement après un envoi réussi — délai laissé pour lire le message.
   document.addEventListener("wpcf7mailsent", () => setTimeout(closeModal, 2500));
 }
 
