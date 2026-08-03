@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Sécurité : pas d'accès direct.
 }
 
-define( 'KPIBI_VERSION', '1.3.18' );
+define( 'KPIBI_VERSION', '1.3.19' );
 
 /**
  * Réglages de base du thème.
@@ -478,21 +478,6 @@ function kpibi_cas_lines( $value ) {
 }
 
 /**
- * Helper : affiche un fragment de titre avec une partie en évidence (or).
- * Échappe le texte ; le balisage <strong> est ajouté autour de la partie « forte ».
- */
-function kpibi_title( $before, $strong = '', $after = '', $break_before_strong = false, $break_after_strong = false ) {
-	$html = esc_html( $before );
-	if ( '' !== $strong ) {
-		$html .= ( $break_before_strong ? '<br>' : ' ' ) . '<strong>' . esc_html( $strong ) . '</strong>';
-	}
-	if ( '' !== $after ) {
-		$html .= ( $break_after_strong ? '<br>' : ' ' ) . esc_html( $after );
-	}
-	return $html;
-}
-
-/**
  * BIBLIOTHÈQUE D'ICÔNES
  * -------------------------------------------------------------------------
  * Jeu d'icônes SVG (trait, viewBox 0 0 24 24) réutilisables. Chaque entrée
@@ -759,9 +744,7 @@ function kpibi_register_strings() {
 		'footer_col1_titre' => 'Nos solutions',
 		'footer_col2_titre' => 'KPIBI',
 		'footer_legal_confidentialite' => 'Politique de confidentialité',
-		'footer_legal_conditions'      => "Conditions d'utilisation",
 		'nav_lang_switch_label'        => 'Choix de la langue',
-		'blog_titre'        => 'Blogue',
 		'blog_vide'         => 'Aucun article pour le moment.',
 		'blog_lire'         => 'Lire',
 		'blog_retour'       => 'Retour au blogue',
@@ -791,6 +774,33 @@ function kpibi_register_strings() {
 		'aria_pied_de_page'     => 'Pied de page',                 // Footer
 		'aria_liens_legaux'     => 'Liens légaux',                 // Legal links
 		'aria_logo_accueil'     => 'KPIBI, accueil',               // KPIBI, home
+		/*
+		 * Replis de texte alternatif des images (KPIBI-31). Appelées par
+		 * kpibi__() dans les gabarits depuis KPIBI-8, mais jamais enregistrées
+		 * ici : la convention du thème est en deux temps (enregistrer la source
+		 * française, puis appeler) et seule la seconde moitié avait été faite.
+		 * Elles n'apparaissaient donc pas dans Langues › Traductions, aucune
+		 * traduction anglaise ne pouvait être saisie, et un lecteur d'écran
+		 * anglophone entendait le repli FRANÇAIS.
+		 *
+		 * Ces replis ne servent que si l'image n'a pas de texte alternatif
+		 * propre en médiathèque : ils nomment l'emplacement de l'image plus
+		 * qu'ils ne la décrivent. Ils restent un filet, pas la solution — le
+		 * vrai correctif est un alt saisi image par image (voir KPIBI-8).
+		 *
+		 * Traductions anglaises à saisir en regard de chaque entrée.
+		 * « Pour qui » est appelée depuis trois gabarits : UNE seule entrée.
+		 */
+		'alt_accueil_pourquoi'     => 'Illustration de la section « Pourquoi KPIBI »', // Illustration for the "Why KPIBI" section
+		'alt_forfait_pourquoi'     => 'Illustration de la section « Pourquoi cette approche »', // Illustration for the "Why this approach" section
+		'alt_forfait_transparence' => 'Illustration de la section « Transparence »', // Illustration for the "Transparency" section
+		'alt_apropos_force'        => 'Illustration de la section « Notre force »', // Illustration for the "Our strength" section
+		'alt_svcapp_pourquoi'      => 'Illustration de la section « Pourquoi des applications sur mesure »', // Illustration for the "Why custom applications" section
+		'alt_pour_qui'             => 'Illustration de la section « Pour qui »', // Illustration for the "Who it's for" section
+		'alt_svcauto_depart'       => "Illustration du point de départ d'une automatisation", // Illustration of an automation's starting point
+		'alt_svcauto_techno'       => 'Illustration des technologies utilisées', // Illustration of the technologies used
+		'alt_cas_client'           => 'Cas client KPIBI', // KPIBI case study
+		'alt_blog_article'         => 'Article du blogue KPIBI', // KPIBI blog post
 	);
 	foreach ( $kpibi_strings as $kpibi_string_name => $kpibi_string_value ) {
 		pll_register_string( $kpibi_string_name, $kpibi_string_value, 'KPIBI — Thème', false );
