@@ -44,14 +44,14 @@ $kpibi_cookie_label = $kpibi_footer_is_en ? 'Cookie Policy' : 'Politique de cook
 ?>
 </main>
 
-<footer aria-label="Pied de page">
+<footer aria-label="<?php echo esc_attr( kpibi__( 'Pied de page' ) ); ?>">
 	<div class="container">
 		<div class="footer-grid">
 			<div class="footer-brand">
 				<?php kpibi_logo( 32 ); ?>
 				<p><?php echo esc_html( $kpibi_desc ); ?></p>
 				<div class="footer-social">
-					<a href="<?php echo esc_url( $kpibi_linkedin ); ?>" target="_blank" rel="noopener noreferrer" aria-label="KPIBI sur LinkedIn">
+					<a href="<?php echo esc_url( $kpibi_linkedin ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( kpibi__( 'KPIBI sur LinkedIn' ) ); ?>">
 						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path><circle cx="4" cy="4" r="2"></circle></svg>
 					</a>
 				</div>
@@ -90,7 +90,7 @@ $kpibi_cookie_label = $kpibi_footer_is_en ? 'Cookie Policy' : 'Politique de cook
 
 		<div class="footer-bottom">
 			<p><?php echo esc_html( $kpibi_copyright ); ?></p>
-			<nav class="footer-legal" aria-label="Liens légaux">
+			<nav class="footer-legal" aria-label="<?php echo esc_attr( kpibi__( 'Liens légaux' ) ); ?>">
 				<?php if ( $kpibi_privacy_url ) : ?>
 					<a href="<?php echo esc_url( $kpibi_privacy_url ); ?>"><?php echo esc_html( kpibi__( 'Politique de confidentialité' ) ); ?></a>
 				<?php endif; ?>

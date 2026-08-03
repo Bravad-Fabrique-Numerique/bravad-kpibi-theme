@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Sécurité : pas d'accès direct.
 }
 
-define( 'KPIBI_VERSION', '1.3.17' );
+define( 'KPIBI_VERSION', '1.3.18' );
 
 /**
  * Réglages de base du thème.
@@ -411,19 +411,29 @@ function kpibi_logo( $svg_size = 38 ) {
 	if ( $logo_id ) {
 		$src = wp_get_attachment_image_url( $logo_id, 'full' );
 		if ( $src ) {
+			// `alt="KPIBI"` reste tel quel : c'est un nom propre, il ne se traduit pas.
 			printf(
-				'<a href="%1$s" class="logo" aria-label="KPIBI, accueil"><img src="%2$s" alt="KPIBI" class="logo-img" style="height:%3$dpx;width:auto;display:block"></a>',
+				'<a href="%1$s" class="logo" aria-label="%4$s"><img src="%2$s" alt="KPIBI" class="logo-img" style="height:%3$dpx;width:auto;display:block"></a>',
 				esc_url( home_url( '/' ) ),
 				esc_url( $src ),
-				(int) $svg_size
+				(int) $svg_size,
+				esc_attr( kpibi__( 'KPIBI, accueil' ) )
 			);
 			return;
 		}
 	}
 	$h = (int) $svg_size;
 	$w = (int) round( $h * 3.1327 ); // ratio du logo (321.3 / 102.6)
+	/*
+	 * Le `aria-label="KPIBI"` du <svg> ci-dessous reste tel quel : nom propre,
+	 * non traduisible. Ce commentaire est placé avant la fermeture de la balise
+	 * PHP pour ne pas insérer de blanc supplémentaire dans le HTML rendu.
+	 * (Il est en bloc et non en `//` : une fermeture de balise PHP écrite dans un
+	 * commentaire de fin de ligne y met fin pour de vrai et laisserait fuir la
+	 * suite du texte dans la page — vérifié.)
+	 */
 	?>
-	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo" aria-label="KPIBI, accueil">
+	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo" aria-label="<?php echo esc_attr( kpibi__( 'KPIBI, accueil' ) ); ?>">
 		<svg class="logo-svg" width="<?php echo esc_attr( $w ); ?>" height="<?php echo esc_attr( $h ); ?>" viewBox="0 0 321.30573 102.56665" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KPIBI">
 			<g transform="translate(-16.848028,-52.407916)">
 				<g transform="translate(8.2038142,6.4207679)">
@@ -759,6 +769,28 @@ function kpibi_register_strings() {
 		'cas_retour'        => 'Retour aux cas clients',
 		'pilier_en_savoir'  => 'En savoir plus',
 		'note_5_etoiles'    => '5 étoiles sur 5',
+		/*
+		 * Titres du bloc « cas client » (KPIBI-10). « Résultats » était déjà
+		 * enregistré ci-dessus et rendait donc « Results » en anglais, alors que
+		 * les deux titres qui le précèdent restaient en français : l'incohérence
+		 * se voyait à l'écran sur /en/case-studies/.
+		 * Traductions à saisir : Context / The KPIBI solution.
+		 */
+		'cas_contexte'      => 'Contexte',
+		'cas_solution'      => 'La solution KPIBI',
+		/*
+		 * Libellés d'accessibilité (KPIBI-10). Invisibles à l'écran mais LUS par
+		 * les lecteurs d'écran : un visiteur anglophone à la synthèse vocale les
+		 * entendait en français. Traductions à saisir en regard de chaque entrée.
+		 */
+		'aria_nav_principale'   => 'Navigation principale',        // Main navigation
+		'aria_linkedin'         => 'KPIBI sur LinkedIn',           // KPIBI on LinkedIn
+		'aria_ouvrir_menu'      => 'Ouvrir le menu',               // Open the menu
+		'aria_menu_navigation'  => 'Menu de navigation',           // Navigation menu
+		'aria_fermer_menu'      => 'Fermer le menu',               // Close the menu
+		'aria_pied_de_page'     => 'Pied de page',                 // Footer
+		'aria_liens_legaux'     => 'Liens légaux',                 // Legal links
+		'aria_logo_accueil'     => 'KPIBI, accueil',               // KPIBI, home
 	);
 	foreach ( $kpibi_strings as $kpibi_string_name => $kpibi_string_value ) {
 		pll_register_string( $kpibi_string_name, $kpibi_string_value, 'KPIBI — Thème', false );
