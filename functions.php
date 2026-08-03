@@ -288,6 +288,71 @@ function kpibi_img( $file ) {
 }
 
 /**
+ * Helper : texte alternatif d'une image, à partir de son URL.
+ *
+ * Lit le champ « texte alternatif » NATIF de la médiathèque WordPress
+ * (`_wp_attachment_image_alt`) plutôt qu'un champ ACF par image : le client
+ * saisit le texte une seule fois, à l'endroit où WordPress l'attend, et il
+ * suit l'image partout où elle est réutilisée. Repli sur $default quand la
+ * médiathèque ne contient rien, pour ne jamais produire d'`alt` vide.
+ *
+ * `attachment_url_to_postid()` fait une requête BD à chaque appel et les mêmes
+ * images reviennent d'une page à l'autre : le résultat est mémoïsé par URL
+ * pour la durée de la requête.
+ *
+ * @param string $url     URL de l'image (format retourné par les champs image ACF).
+ * @param string $default Texte alternatif de repli si aucun n'est défini en médiathèque.
+ * @return string
+ */
+function kpibi_img_alt( $url, $default = '' ) {
+	static $cache = array();
+
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return $default;
+	}
+
+	if ( ! array_key_exists( $url, $cache ) ) {
+		$alt           = '';
+		$attachment_id = attachment_url_to_postid( $url );
+		if ( $attachment_id ) {
+			$alt = trim( (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) );
+		}
+		// On mémoïse aussi la chaîne vide : une image sans texte alternatif en
+		// médiathèque ne doit pas relancer la requête à chaque affichage.
+		$cache[ $url ] = $alt;
+	}
+
+	return '' !== $cache[ $url ] ? $cache[ $url ] : $default;
+}
+
+/**
+ * Helper : texte alternatif de l'image mise en avant d'une publication.
+ *
+ * Variante de kpibi_img_alt() pour les vignettes : l'ID de la pièce jointe est
+ * déjà connu, on lit donc la médiathèque directement, sans requête de
+ * résolution d'URL. C'est aussi la seule façon correcte de procéder ici, car
+ * les vignettes sont rendues à une taille intermédiaire (« large »,
+ * « medium_large ») dont l'URL suffixée `-800x600` n'est PAS résoluble par
+ * attachment_url_to_postid() : passer par l'URL ignorerait silencieusement le
+ * texte alternatif saisi en médiathèque.
+ *
+ * @param int    $post_id ID de la publication portant l'image mise en avant.
+ * @param string $default Texte alternatif de repli (en pratique : son titre).
+ * @return string
+ */
+function kpibi_thumb_alt( $post_id, $default = '' ) {
+	$thumbnail_id = get_post_thumbnail_id( $post_id );
+	if ( $thumbnail_id ) {
+		$alt = trim( (string) get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ) );
+		if ( '' !== $alt ) {
+			return $alt;
+		}
+	}
+	return $default;
+}
+
+/**
  * Affiche le logo du site : le logo téléversé dans le Personnalisateur s'il
  * existe, sinon le logo par défaut (pictogramme SVG + mot-symbole « KPIBI »).
  * Rend le logo éditable depuis le CMS sans casser le rendu actuel.

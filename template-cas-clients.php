@@ -173,6 +173,9 @@ foreach ( $kpibi_cas_posts as $kpibi_cas_post ) {
 	$kpibi_cas_clients[] = array(
 		'tag'                => $kpibi_has_acf ? get_field( 'ccpt_tag', $kpibi_post_id ) : '',
 		'image'              => get_the_post_thumbnail_url( $kpibi_post_id, 'large' ),
+		// Texte alternatif résolu ici, où l'ID du post est connu : l'URL ci-dessus
+		// est une taille intermédiaire, non résoluble depuis l'URL seule.
+		'image_alt'          => kpibi_thumb_alt( $kpibi_post_id, '' ),
 		'titre'              => get_the_title( $kpibi_post_id ),
 		'titre_fort'         => $kpibi_has_acf ? get_field( 'ccpt_titre_fort', $kpibi_post_id ) : '',
 		'contexte'           => $kpibi_has_acf ? get_field( 'ccpt_contexte', $kpibi_post_id ) : '',
@@ -239,10 +242,22 @@ while ( have_posts() ) :
 				$kpibi_auteur_nom  = isset( $kpibi_cas['auteur_nom'] ) ? $kpibi_cas['auteur_nom'] : '';
 				$kpibi_auteur_role = isset( $kpibi_cas['auteur_role'] ) ? $kpibi_cas['auteur_role'] : '';
 				$kpibi_img_pos     = isset( $kpibi_cas['img_position'] ) ? $kpibi_cas['img_position'] : 'center';
+				// Repli du texte alternatif : le titre du cas client (ses deux
+				// moitiés telles qu'affichées), ou un libellé générique s'il est vide.
+				$kpibi_img_alt_repli = trim( $kpibi_titre . ' ' . $kpibi_titre_fort );
+				if ( '' === $kpibi_img_alt_repli ) {
+					$kpibi_img_alt_repli = kpibi__( 'Cas client KPIBI' );
+				}
+				// Cas venant du CPT : alt déjà résolu depuis l'image mise en avant.
+				// Cas de démonstration : l'image est un fichier du thème, absent de la
+				// médiathèque — kpibi_img_alt() retombera donc sur le titre.
+				$kpibi_cas_img_alt = ! empty( $kpibi_cas['image_alt'] )
+					? $kpibi_cas['image_alt']
+					: kpibi_img_alt( $kpibi_image, $kpibi_img_alt_repli );
 				?>
 				<article class="cas-card reveal">
 					<?php if ( $kpibi_image ) : ?>
-						<img src="<?php echo esc_url( $kpibi_image ); ?>" alt="" class="cas-card-img" loading="lazy" style="object-position:<?php echo esc_attr( $kpibi_img_pos ); ?>;">
+						<img src="<?php echo esc_url( $kpibi_image ); ?>" alt="<?php echo esc_attr( $kpibi_cas_img_alt ); ?>" class="cas-card-img" loading="lazy" style="object-position:<?php echo esc_attr( $kpibi_img_pos ); ?>;">
 					<?php endif; ?>
 					<div class="cas-card-body">
 						<?php if ( $kpibi_tag ) : ?>
