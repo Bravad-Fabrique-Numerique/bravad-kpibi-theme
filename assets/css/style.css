@@ -302,11 +302,8 @@ a { text-decoration: none; color: inherit; }
 .cas-results { display: flex; gap: 32px; flex-wrap: wrap; padding: 24px 0; border-top: 1px solid var(--slate-200); border-bottom: 1px solid var(--slate-200); margin-bottom: 28px; }
 .cas-result-num { font-family: "Dubai", sans-serif; font-size: 36px; font-weight: 300; color: var(--gold-600); line-height: 1; margin-bottom: 4px; }
 .cas-result-label { font-size: 12px; color: var(--slate-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
-/* Sur mobile, resserre le chiffre et son libellé (ex. « 20–30 h » / « ÉCONOMISÉES PAR MOIS »).
-   Le sélecteur reprend `.cas-card-body` à dessein : la règle générique
-   `.cas-card-body p` ci-dessus est plus spécifique que `.cas-result-num` et lui
-   impose sa marge de 24 px, trop grande pour un couple chiffre/libellé. */
-@media (max-width: 768px) { .cas-card-body .cas-result-num { margin-bottom: 4px; } }
+/* Ces deux règles sont à 0-1-0 et ne s'appliquent PAS telles quelles : voir la
+   reprise à classe doublée en fin de fichier (KPIBI-27). */
 
 /* BLOGUE */
 .section-blog { padding: 100px 0; background: var(--white); }
@@ -720,4 +717,53 @@ header { position: sticky; top: 0; z-index: 100; }
 	.nav-inner { gap: 4px; }
 	.lang-switcher { margin-left: 4px; }
 	.lang-link { padding-left: 6px; padding-right: 6px; }
+}
+
+/* ===== CHIFFRES CLÉS DES CAS CLIENTS (KPIBI-27) =====
+   Troisième occurrence du vol de propriétés déjà traité en KPIBI-17 (pastilles)
+   et KPIBI-18 (marges), et même remède : la classe doublée.
+
+   Le chiffre et son libellé sont des <p> dans .cas-card-body
+   (template-cas-clients.php l.303, single-cas_client.php l.101). La règle de
+   conteneur `.cas-card-body p` (l.301) est qualifiée par un élément, donc à
+   0-1-1 : elle l'emporte sur .cas-result-num et .cas-result-label, à 0-1-0,
+   quel que soit l'ordre du fichier.
+
+   DEUX victimes, pas une — mesuré au getComputedStyle avant correction :
+     .cas-result-num   : font-size 36px -> 15.5px, color --gold-600 ->
+                         rgb(100,116,139) (--slate-500), line-height 1 ->
+                         27.59px, margin-bottom 4px -> 24px.
+     .cas-result-label : font-size 12px -> 15.5px.
+   Le chiffre et son libellé rendaient donc TOUS DEUX à 15,5 px : c'est
+   exactement pour cela que le chiffre ne se détachait pas. Ne reprendre que
+   .cas-result-num n'aurait réglé que la moitié du problème.
+
+   font-family et font-weight ne sont PAS volés au chiffre : la règle de
+   conteneur ne les déclare pas, il rendait donc déjà en Dubai 300. De même, le
+   libellé conserve text-transform et letter-spacing. On ne reprend ici que ce
+   qui est réellement perdu — si `.cas-card-body p` gagnait un jour font-family
+   ou font-weight, il faudrait les ajouter ici aussi.
+
+   Doubler la classe porte la reprise à 0-2-0 : elle repasse devant le conteneur
+   sans toucher au HTML et sans déplacer de règle existante, l'ordre de la
+   cascade du thème restant intact (cf. .btn.nav-cta et les pastilles de
+   KPIBI-17).
+
+   La règle `@media (max-width: 768px) { .cas-card-body .cas-result-num
+   { margin-bottom: 4px } }` posée par KPIBI-19 a été RETIRÉE : margin-bottom
+   est désormais rétabli à 4px sur tous les écrans, elle ne faisait donc plus
+   rien, et elle employait l'ancienne technique par conteneur, ce qui brouillait
+   la convention.
+
+   .cas-quote-attrib est le seul autre <p> à classe de ce conteneur (relevé sur
+   les deux gabarits) : il est protégé par des styles inline (1-0-0-0) et relève
+   de KPIBI-16 — laissé tel quel ici. */
+.cas-result-num.cas-result-num {
+	font-size: 36px;
+	color: var(--gold-600);
+	line-height: 1;
+	margin-bottom: 4px;
+}
+.cas-result-label.cas-result-label {
+	font-size: 12px;
 }
