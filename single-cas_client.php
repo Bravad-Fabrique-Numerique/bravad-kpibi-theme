@@ -70,14 +70,14 @@ while ( have_posts() ) :
 				<div class="cas-card-body">
 
 					<?php if ( ! empty( $kpibi_contexte ) ) : ?>
-						<h4 style="font-family:'Dubai',sans-serif;font-size:14px;font-weight:500;color:var(--gold-700);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Contexte</h4>
+						<h4 style="font-family:'Dubai',sans-serif;font-size:14px;font-weight:500;color:var(--gold-700);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;"><?php echo esc_html( kpibi__( 'Contexte' ) ); ?></h4>
 						<?php foreach ( $kpibi_contexte as $kpibi_p ) : ?>
 							<p><?php echo esc_html( $kpibi_p ); ?></p>
 						<?php endforeach; ?>
 					<?php endif; ?>
 
 					<?php if ( ! empty( $kpibi_solution ) ) : ?>
-						<h4 style="font-family:'Dubai',sans-serif;font-size:14px;font-weight:500;color:var(--gold-700);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">La solution KPIBI</h4>
+						<h4 style="font-family:'Dubai',sans-serif;font-size:14px;font-weight:500;color:var(--gold-700);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;"><?php echo esc_html( kpibi__( 'La solution KPIBI' ) ); ?></h4>
 						<?php foreach ( $kpibi_solution as $kpibi_p ) : ?>
 							<p><?php echo esc_html( $kpibi_p ); ?></p>
 						<?php endforeach; ?>
