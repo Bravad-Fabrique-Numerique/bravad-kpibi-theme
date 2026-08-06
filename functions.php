@@ -309,16 +309,72 @@ function kpibi_typo_deep( $valeur ) {
  * sans qu'on ait à retoucher un gabarit. La valeur par défaut y passe aussi,
  * pour que le rendu soit identique que le champ soit rempli ou non.
  *
- * @param string $name    Nom du champ ACF.
- * @param string $default Valeur par défaut.
+ * @param string    $name    Nom du champ ACF.
+ * @param string    $default Valeur par défaut.
+ * @param int|false $post_id Publication à lire. `false` = contexte courant
+ *                           (comportement historique, valeur par défaut de
+ *                           get_field()). À renseigner quand l'appel se fait
+ *                           HORS BOUCLE, où la résolution implicite d'ACF
+ *                           n'est pas garantie (voir kpibi_posts_page_id()).
  * @return string
  */
-function kpibi_f( $name, $default = '' ) {
+function kpibi_f( $name, $default = '', $post_id = false ) {
 	if ( ! function_exists( 'get_field' ) ) {
 		return kpibi_typo( $default );
 	}
-	$value = get_field( $name );
+	$value = get_field( $name, $post_id );
 	return kpibi_typo_deep( ( null !== $value && '' !== $value ) ? $value : $default );
+}
+
+/**
+ * Helper : lit un champ ACF BOOLÉEN (interrupteur `true_false`).
+ *
+ * Volontairement distinct de kpibi_f(), qui n'est PAS utilisable ici pour
+ * deux raisons :
+ *
+ * 1. kpibi_f() fait passer sa valeur par kpibi_typo_deep(), écrit pour du
+ *    texte — un booléen n'a rien à y faire.
+ * 2. Son test de vacuité (`null !== $value && '' !== $value`) laisse passer
+ *    `false` : une case DÉCOCHÉE retomberait sur la valeur par défaut et la
+ *    section resterait affichée. Exactement le contraire de ce qu'on demande.
+ *
+ * Ici, seul `null` (métadonnée absente, donc jamais enregistrée) déclenche le
+ * repli ; `false` est une réponse valide et respectée.
+ *
+ * @param string    $name    Nom du champ ACF.
+ * @param bool      $default Valeur si la métadonnée est absente.
+ * @param int|false $post_id Publication à lire. `false` = contexte courant.
+ * @return bool
+ */
+function kpibi_f_bool( $name, $default = true, $post_id = false ) {
+	if ( ! function_exists( 'get_field' ) ) {
+		return $default;
+	}
+	$value = get_field( $name, $post_id );
+	return ( null === $value ) ? $default : (bool) $value;
+}
+
+/**
+ * Helper : identifiant de la page « articles » (Réglages › Lecture) dans le
+ * contexte courant.
+ *
+ * Sur l'accueil du blogue, les gabarits appellent get_field() HORS BOUCLE :
+ * sans identifiant explicite, la lecture dépend de la résolution implicite
+ * d'ACF. On désigne donc la publication à lire.
+ *
+ * L'objet interrogé est privilégié à get_option( 'page_for_posts' ) : c'est
+ * lui qui porte la BONNE langue sur /en/blog/, y compris si Polylang ne filtre
+ * pas l'option. Repli sur l'option quand il n'y a pas d'objet interrogé.
+ *
+ * @return int|false Identifiant de la page, ou false si le site n'en a pas.
+ */
+function kpibi_posts_page_id() {
+	$kpibi_id = (int) get_queried_object_id();
+	if ( $kpibi_id && 'page' === get_post_type( $kpibi_id ) ) {
+		return $kpibi_id;
+	}
+	$kpibi_id = (int) get_option( 'page_for_posts' );
+	return $kpibi_id ? $kpibi_id : false;
 }
 
 /**
@@ -921,6 +977,31 @@ function kpibi_field_image( $name, $label, $instr = '' ) {
 		'preview_size'  => 'medium',
 		'library'       => 'all',
 		'instructions'  => trim( $instr . ' (laisser vide = emplacement neutre)' ),
+	);
+}
+
+/**
+ * Interrupteur oui/non (`true_false`), rendu en bascule dans l'éditeur.
+ *
+ * Sert à décider CÔTÉ SERVEUR si une section est rendue, plutôt que de la
+ * masquer en JavaScript après coup (voir KPIBI-35).
+ *
+ * ⚠️ `default_value` ne s'applique que si la métadonnée est ABSENTE. Sur une
+ * page déjà enregistrée, la case suit ce qui est en base. Et à la première
+ * mise en ligne du champ, toutes les pages partent donc de la valeur par
+ * défaut : décocher se fait en wp-admin, un déploiement n'y suffit pas.
+ *
+ * Se lit avec kpibi_f_bool(), jamais avec kpibi_f().
+ */
+function kpibi_field_bool( $name, $label, $default = 1, $instr = '' ) {
+	return array(
+		'key'           => 'field_kpibi_' . $name,
+		'label'         => $label,
+		'name'          => $name,
+		'type'          => 'true_false',
+		'default_value' => $default,
+		'ui'            => 1,
+		'instructions'  => $instr,
 	);
 }
 
