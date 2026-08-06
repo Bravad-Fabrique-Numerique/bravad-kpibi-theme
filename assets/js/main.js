@@ -233,27 +233,3 @@ if (!kpibiReduceMotion && kpibiFinePointer) {
     hero.addEventListener("mouseleave", () => glow.classList.remove("active"));
   });
 }
-
-/* Masquer les sections sans équivalent maquette (ex-snippet WPCode #430).
-   Appliqué aux pages FR ET à leurs équivalents EN pour une UI identique
-   dans les deux langues. */
-(function () {
-  function hideAfterComment(label) {
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT);
-    var node;
-    while ((node = walker.nextNode())) {
-      if (node.textContent.trim() === label) {
-        var el = node.nextElementSibling;
-        if (el) el.style.display = "none";
-      }
-    }
-  }
-  function hide(sel) { var e = document.querySelector(sel); if (e) e.style.display = "none"; }
-  var cls = document.body.className;
-  // Applications : FR 52 / EN 490
-  if (/\bpage-id-(52|490)\b/.test(cls)) { hideAfterComment("POUR QUI"); hide(".rapport-teaser"); hide(".approche-timeline"); }
-  // Automatisation : FR 56 / EN 496
-  if (/\bpage-id-(56|496)\b/.test(cls)) { hideAfterComment("APPROCHE"); hide("#demarche"); }
-  // Tableaux de bord : FR 71 / EN 485
-  if (/\bpage-id-(71|485)\b/.test(cls)) { hideAfterComment("POUR QUI"); hide(".rapport-teaser"); hide(".approche-timeline"); }
-})();
