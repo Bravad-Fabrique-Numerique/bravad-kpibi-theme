@@ -374,7 +374,7 @@ function kpibi_f_bool( $name, $default = true, $post_id = false ) {
  *
  * ⚠️ Une abréviation contenant un point (« etc. », « inc. », « M. Bexton »)
  * serait coupée à tort. Les titres de bannière sont courts et n'en contiennent
- * aucune aujourd'hui, FR comme EN — vérifié sur les 18 pages. À revoir le jour
+ * aucune aujourd'hui, FR comme EN, vérifié sur les 18 pages. À revoir le jour
  * où une abréviation apparaît dans un titre de bannière.
  *
  * Deux cas ne bougent pas, tous deux parce que la ponctuation n'y est pas

@@ -133,7 +133,7 @@ function kpibi_register_apropos_fields() {
 	//
 	// Lien laissé VIDE par défaut, et non « ?page_id=32 » : un identifiant de
 	// page est propre à un environnement (32 sur dev, 27 en local) et pointerait
-	// ailleurs — ou nulle part — après un déploiement. Le repli est confié à
+	// ailleurs, ou nulle part, après un déploiement. Le repli est confié à
 	// kpibi_link( …, 'cas-clients' ) au gabarit, qui résout le permalien de la
 	// page dans la LANGUE courante. Une valeur « ?page_id=N » saisie au CMS
 	// reste honorée par kpibi_link(), traduction comprise.

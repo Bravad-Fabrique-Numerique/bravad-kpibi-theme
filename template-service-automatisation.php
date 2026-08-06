@@ -71,7 +71,7 @@ while ( have_posts() ) :
 	$kpibi_svcauto_tuiles_items = kpibi_typo_deep( get_field( 'svcauto_tuiles' ) ?: $kpibi_svcauto_tuiles_defaults );
 
 	/*
-	 * Cas de la section « Pour qui » (KPIBI-36, B3) — contenu de la maquette
+	 * Cas de la section « Pour qui » (KPIBI-36, B3) : contenu de la maquette
 	 * approuvée maquette/service-automatisation.html.
 	 *
 	 * CINQ cas, pas six : la demande en annonçait six, la maquette approuvée en
@@ -383,7 +383,7 @@ while ( have_posts() ) :
 		POUR QUI
 
 		Ordre TEXTE / IMAGE (KPIBI-36, C1) : les trois sections split de cette page
-		rendaient TEXTE/IMAGE, puis IMAGE/TEXTE, puis IMAGE/TEXTE — les deux
+		rendaient TEXTE/IMAGE, puis IMAGE/TEXTE, puis IMAGE/TEXTE : les deux
 		dernières identiques, l'alternance cassait. L'ordre visuel suit l'ordre du
 		DOM, aucune propriété `order` en CSS n'intervient : échanger les deux
 		enfants de .split-inner suffit.
