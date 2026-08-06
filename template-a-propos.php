@@ -183,6 +183,23 @@ while ( have_posts() ) :
 				<p><?php echo esc_html( kpibi_f( 'apropos_cta_texte', "Chaque organisation est différente. Prenons le temps de discuter de votre réalité, de vos priorités et des leviers qui pourraient créer le plus de valeur pour votre équipe." ) ); ?></p>
 				<div class="cta-actions">
 					<a href="<?php echo esc_url( kpibi_f( 'apropos_cta_btn_url', 'mailto:' . get_theme_mod( 'kpibi_email', 'info@kpibi.com' ) ) ); ?>" class="btn btn-primary" style="font-size:16px;padding:14px 32px;"><?php echo esc_html( kpibi_f( 'apropos_cta_btn_texte', 'Planifier une consultation gratuite — sans engagement' ) ); ?></a>
+					<?php
+					// Second bouton vers Cas clients (KPIBI-36, B1), sur le motif
+					// exact des autres pages : libellé par défaut en second
+					// argument, condition sur sa présence, lien passé par
+					// kpibi_link() pour suivre la traduction de la page cible.
+					//
+					// Le défaut est bien porté ICI et pas seulement par le champ
+					// ACF : sur une page déjà enregistrée, un champ jamais saisi
+					// n'a pas de métadonnée, et get_field() renvoie null sans
+					// appliquer le default_value (vérifié, ACF 6.8.5). Sans ce
+					// second argument, le bouton n'apparaîtrait qu'après un
+					// enregistrement de la page en wp-admin.
+					$kpibi_cta_btn2_texte = kpibi_f( 'apropos_cta_btn2_texte', 'Voir nos réalisations' );
+					?>
+					<?php if ( '' !== trim( $kpibi_cta_btn2_texte ) ) : ?>
+						<a href="<?php echo esc_url( kpibi_link( kpibi_f( 'apropos_cta_btn2_url', '' ), 'cas-clients' ) ); ?>" class="btn btn-outline" style="font-size:16px;padding:14px 32px;"><?php echo esc_html( $kpibi_cta_btn2_texte ); ?></a>
+					<?php endif; ?>
 				</div>
 				<p class="cta-guarantee"><?php echo esc_html( kpibi_f( 'apropos_cta_garantie', "Vous repartirez avec une feuille de route claire, les premiers leviers d'amélioration identifiés et une analyse comparative financière de votre industrie." ) ); ?></p>
 			</div>

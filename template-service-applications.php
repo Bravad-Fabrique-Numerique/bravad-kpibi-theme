@@ -360,12 +360,20 @@ while ( have_posts() ) :
 				<?php
 				foreach ( $kpibi_benefits_items as $kpibi_i => $kpibi_item ) :
 					$kpibi_bicon = ! empty( $kpibi_item['icone'] ) ? $kpibi_item['icone'] : kpibi_guess_benefit_icon( isset( $kpibi_item['titre'] ) ? $kpibi_item['titre'] : '' );
+					// Lien optionnel de carte (KPIBI-36, B2) : voir template-service.php.
+					// Le sous-champ appartient au répéteur partagé benefits_items, il
+					// est donc rendu par les TROIS gabarits service, sans quoi un lien
+					// saisi sur cette page resterait sans effet.
+					$kpibi_blien = isset( $kpibi_item['lien'] ) ? trim( (string) $kpibi_item['lien'] ) : '';
+					$kpibi_bcls  = 'benefit-card reveal' . ( $kpibi_i > 0 ? ' reveal-delay-' . min( $kpibi_i, 4 ) : '' );
+					$kpibi_btag  = ( '' !== $kpibi_blien ) ? 'a' : 'div';
+					$kpibi_bhref = ( '' !== $kpibi_blien ) ? ' href="' . esc_url( kpibi_link( $kpibi_blien, 'cas-clients' ) ) . '"' : '';
 					?>
-					<div class="benefit-card reveal<?php echo $kpibi_i > 0 ? ' reveal-delay-' . esc_attr( min( $kpibi_i, 4 ) ) : ''; ?>">
+					<<?php echo esc_attr( $kpibi_btag ); ?> class="<?php echo esc_attr( $kpibi_bcls ); ?>"<?php echo $kpibi_bhref; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href construit avec esc_url() ci-dessus. ?>>
 						<div class="benefit-icon"><svg viewBox="0 0 24 24"><?php echo kpibi_icon( $kpibi_bicon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></svg></div>
 						<h3><?php echo esc_html( $kpibi_item['titre'] ); ?></h3>
 						<p><?php echo esc_html( $kpibi_item['texte'] ); ?></p>
-					</div>
+					</<?php echo esc_attr( $kpibi_btag ); ?>>
 				<?php endforeach; ?>
 			</div>
 		</div>

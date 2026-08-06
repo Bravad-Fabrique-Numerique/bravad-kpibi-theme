@@ -261,6 +261,12 @@ a { text-decoration: none; color: inherit; }
 .benefit-icon svg { width: 24px; height: 24px; stroke: var(--gold-400); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .benefit-card h3 { font-family: "Dubai", sans-serif; font-size: 18px; font-weight: 400; color: var(--white); margin-bottom: 10px; }
 .benefit-card p { font-size: 14px; color: rgba(255,255,255,0.68); line-height: 1.65; }
+/* Carte bénéfice rendue en <a> quand un lien optionnel est saisi au CMS
+   (KPIBI-36, B2). Seul `display` est repris : `text-decoration` et `color` sont
+   déjà neutralisés par la règle globale `a` (l.30), et les couleurs de texte
+   restent portées par .benefit-card h3 / .benefit-card p ci-dessus. Même motif
+   que .pilier-card et .blog-card, déjà rendues en liens. */
+a.benefit-card { display: block; }
 
 /* FORFAIT */
 .section-forfait-main { padding: 100px 0; background: var(--white); }

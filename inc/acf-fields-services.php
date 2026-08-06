@@ -191,6 +191,20 @@ function kpibi_register_service_fields() {
 		'return_format' => 'value',
 		'instructions'  => 'Laisser vide = icône choisie automatiquement selon le titre.',
 	);
+	// Lien optionnel (KPIBI-36, B2). Sur Tableaux de bord, la carte « Des cas
+	// concrets » se termine par « Voir nos cas clients → » : elle ressemblait à
+	// un lien sans en être un, il n'y avait aucune balise <a>.
+	//
+	// Traité au RÉPÉTEUR plutôt qu'en exception dans le seul gabarit concerné :
+	// le cas est générique (n'importe quelle carte de n'importe quelle page peut
+	// devoir pointer quelque part), le répéteur accepte un sous-champ de plus
+	// sans rien casser, et la version anglaise se saisit alors comme le reste du
+	// contenu, sans code dédié.
+	//
+	// Carte laissée NON cliquable tant que le champ est vide : le comportement
+	// des pages existantes ne change pas.
+	$kpibi_benefits_sub_lien        = $txt( 'lien', 'Lien (optionnel)', '', 0, 'Laisser vide = carte non cliquable. Une adresse complète, ou « ?page_id=N » pour une page du site (la version traduite est suivie automatiquement).' );
+	$kpibi_benefits_sub_lien['key'] = 'field_kpibi_benefits_item_lien';
 	$fields[] = array(
 		'key'          => 'field_kpibi_benefits_items',
 		'label'        => 'Cartes bénéfices',
@@ -203,6 +217,7 @@ function kpibi_register_service_fields() {
 			$kpibi_benefits_sub_titre,
 			$kpibi_benefits_sub_texte,
 			$kpibi_benefits_sub_icone,
+			$kpibi_benefits_sub_lien,
 		),
 	);
 

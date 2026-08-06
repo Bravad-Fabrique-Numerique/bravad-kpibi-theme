@@ -128,6 +128,17 @@ function kpibi_register_apropos_fields() {
 	$fields[] = $area( 'apropos_cta_texte', 'Texte', 'Chaque organisation est différente. Prenons le temps de discuter de votre réalité, de vos priorités et des leviers qui pourraient créer le plus de valeur pour votre équipe.', 280 );
 	$fields[] = $txt( 'apropos_cta_btn_texte', 'Bouton — texte', 'Planifier une consultation gratuite — sans engagement', 60 );
 	$fields[] = $txt( 'apropos_cta_btn_url', 'Bouton — lien', 'mailto:' . get_theme_mod( 'kpibi_email', 'info@kpibi.com' ) );
+	// Second bouton, vers Cas clients (KPIBI-36, B1) : la section n'en portait
+	// qu'un seul, contrairement aux autres pages.
+	//
+	// Lien laissé VIDE par défaut, et non « ?page_id=32 » : un identifiant de
+	// page est propre à un environnement (32 sur dev, 27 en local) et pointerait
+	// ailleurs — ou nulle part — après un déploiement. Le repli est confié à
+	// kpibi_link( …, 'cas-clients' ) au gabarit, qui résout le permalien de la
+	// page dans la LANGUE courante. Une valeur « ?page_id=N » saisie au CMS
+	// reste honorée par kpibi_link(), traduction comprise.
+	$fields[] = $txt( 'apropos_cta_btn2_texte', 'Bouton 2 — texte', 'Voir nos réalisations', 40 );
+	$fields[] = $txt( 'apropos_cta_btn2_url', 'Bouton 2 — lien', '' );
 	$fields[] = $area( 'apropos_cta_garantie', 'Ligne de garantie', "Vous repartirez avec une feuille de route claire, les premiers leviers d'amélioration identifiés et une analyse comparative financière de votre industrie.", 200 );
 
 	acf_add_local_field_group(

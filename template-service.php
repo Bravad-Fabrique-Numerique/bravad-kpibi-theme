@@ -256,12 +256,23 @@ while ( have_posts() ) :
 				<?php
 				foreach ( $kpibi_benefits_items as $kpibi_i => $kpibi_item ) :
 					$kpibi_bicon = ! empty( $kpibi_item['icone'] ) ? $kpibi_item['icone'] : kpibi_guess_benefit_icon( isset( $kpibi_item['titre'] ) ? $kpibi_item['titre'] : '' );
+					// Carte cliquable seulement si un lien est saisi (KPIBI-36, B2) :
+					// sans lien, on garde le <div> et le rendu des pages existantes
+					// est inchangé. kpibi_link() résout « ?page_id=N » dans la
+					// langue courante ; le slug de repli ne sert qu'aux vieux liens
+					// « .html » de la maquette.
+					$kpibi_blien = isset( $kpibi_item['lien'] ) ? trim( (string) $kpibi_item['lien'] ) : '';
+					$kpibi_bcls  = 'benefit-card reveal' . ( $kpibi_i > 0 ? ' reveal-delay-' . min( $kpibi_i, 4 ) : '' );
+					// Balise choisie plutôt que markup dupliqué : une seule copie du
+					// contenu de la carte, les deux variantes ne peuvent pas diverger.
+					$kpibi_btag  = ( '' !== $kpibi_blien ) ? 'a' : 'div';
+					$kpibi_bhref = ( '' !== $kpibi_blien ) ? ' href="' . esc_url( kpibi_link( $kpibi_blien, 'cas-clients' ) ) . '"' : '';
 					?>
-					<div class="benefit-card reveal<?php echo $kpibi_i > 0 ? ' reveal-delay-' . esc_attr( min( $kpibi_i, 4 ) ) : ''; ?>">
+					<<?php echo esc_attr( $kpibi_btag ); ?> class="<?php echo esc_attr( $kpibi_bcls ); ?>"<?php echo $kpibi_bhref; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href construit avec esc_url() ci-dessus. ?>>
 						<div class="benefit-icon"><svg viewBox="0 0 24 24"><?php echo kpibi_icon( $kpibi_bicon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></svg></div>
 						<h3><?php echo esc_html( $kpibi_item['titre'] ); ?></h3>
 						<p><?php echo esc_html( $kpibi_item['texte'] ); ?></p>
-					</div>
+					</<?php echo esc_attr( $kpibi_btag ); ?>>
 				<?php endforeach; ?>
 			</div>
 		</div>
