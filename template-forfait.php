@@ -47,8 +47,10 @@ get_header();
 		<div class="container"><div class="page-hero-inner">
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'forfait_hero_label', 'Le modèle KPIBI · Partenariat' ) ); ?></p>
 			<h1><?php
-				echo esc_html( kpibi_f( 'forfait_hero_titre', 'Vos priorités évoluent.' ) );
-				echo '<br><strong>' . esc_html( kpibi_f( 'forfait_hero_titre_fort', 'Vos solutions devraient évoluer aussi.' ) ) . '</strong>';
+				// Une phrase par ligne (KPIBI-36, C2).
+				$kpibi_h1  = esc_html( kpibi_f( 'forfait_hero_titre', 'Vos priorités évoluent.' ) );
+				$kpibi_h1 .= '<br><strong>' . esc_html( kpibi_f( 'forfait_hero_titre_fort', 'Vos solutions devraient évoluer aussi.' ) ) . '</strong>';
+				echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 			?></h1>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'forfait_hero_sub', 'Avec KPIBI, nous concevons, opérons et faisons évoluer vos systèmes de performance.' ) ); ?></p>
 			<div class="page-hero-actions">

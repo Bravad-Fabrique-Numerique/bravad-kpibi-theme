@@ -117,8 +117,11 @@ while ( have_posts() ) :
 		<div class="container"><div class="page-hero-inner">
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'service_hero_label', 'Amélioration des processus · Optimisation opérationnelle' ) ); ?></p>
 			<h1><?php
-				echo esc_html( kpibi_f( 'service_hero_titre', 'Créer des systèmes où la' ) ) . ' ';
-				echo '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'performance devient naturelle.' ) ) . '</strong>';
+				// Une phrase par ligne (KPIBI-36, C2). C'est ce gabarit qui servait
+				// Tableaux de bord FR, où 2 phrases rendaient sur 3 lignes.
+				$kpibi_h1  = esc_html( kpibi_f( 'service_hero_titre', 'Créer des systèmes où la' ) ) . ' ';
+				$kpibi_h1 .= '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'performance devient naturelle.' ) ) . '</strong>';
+				echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 			?></h1>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'service_hero_sub', 'Nous aidons les PME à simplifier, automatiser et mesurer leurs processus pour transformer la performance en résultat naturel du système — et non en effort constant.' ) ); ?></p>
 			<div class="page-hero-actions">

@@ -59,7 +59,15 @@ while ( have_posts() ) :
 			<?php if ( $kpibi_tag ) : ?>
 				<p class="page-hero-label"><?php echo esc_html( $kpibi_tag ); ?></p>
 			<?php endif; ?>
-			<h1><?php echo esc_html( $kpibi_titre ); ?><?php if ( $kpibi_titre_fort ) : ?><br><strong><?php echo esc_html( $kpibi_titre_fort ); ?></strong><?php endif; ?></h1>
+			<?php
+			// Une phrase par ligne (KPIBI-36, C2). Même règle que les bannières de
+			// page : la fiche d'un cas client porte la même bannière .page-hero.
+			$kpibi_h1 = esc_html( $kpibi_titre );
+			if ( $kpibi_titre_fort ) {
+				$kpibi_h1 .= '<br><strong>' . esc_html( $kpibi_titre_fort ) . '</strong>';
+			}
+			?>
+			<h1><?php echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>. ?></h1>
 		</div></div>
 	</section>
 

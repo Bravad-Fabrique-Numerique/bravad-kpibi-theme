@@ -29,7 +29,8 @@ $kpibi_blog_bg = is_home() ? kpibi_f( 'blogue_hero_image', '', kpibi_posts_page_
 		<?php if ( is_home() ) : ?>
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'blogue_hero_label', 'Blogue · Ressources' ) ); ?></p>
 		<?php endif; ?>
-		<h1><?php echo esc_html( is_home() ? kpibi_f( 'blogue_hero_titre', 'Blogue' ) : wp_get_document_title() ); ?></h1>
+		<?php // Une phrase par ligne (KPIBI-36, C2), appliqué après esc_html(). ?>
+		<h1><?php echo kpibi_titre_phrases( esc_html( is_home() ? kpibi_f( 'blogue_hero_titre', 'Blogue' ) : wp_get_document_title() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- titre déjà échappé, le helper n'ajoute que des <br>. ?></h1>
 		<?php if ( is_home() ) : ?>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'blogue_hero_sub', "Des articles pratiques sur l'excellence opérationnelle, les KPI, l'automatisation, les applications d'affaires et les systèmes qui soutiennent la performance." ) ); ?></p>
 		<?php endif; ?>

@@ -192,7 +192,21 @@ a { text-decoration: none; color: inherit; }
 .temoignage-author { display: flex; align-items: center; gap: 14px; padding-top: 22px; border-top: 1px solid var(--slate-200); }
 .author-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--black-800); display: flex; align-items: center; justify-content: center; font-family: "Dubai", sans-serif; font-size: 15px; font-weight: 500; color: var(--gold-400); flex-shrink: 0; }
 .author-info strong { display: block; font-size: 14.5px; font-weight: 700; color: var(--slate-900); margin-bottom: 2px; }
-.author-info span { font-size: 13px; color: var(--slate-500); }
+/* Libellé de fonction des témoignages : hauteur plancher de DEUX lignes
+   (KPIBI-36, C3), pour que les trois cartes s'alignent quelle que soit la
+   longueur du texte. Mesuré sur l'accueil avant correctif : 44/44/44 px en
+   français, mais 44/18/18 px en anglais, où les libellés tiennent sur une
+   ligne. La coupure n'est pas forcée dans le contenu : elle ne survivrait pas
+   à une traduction.
+
+   `display: block` est indispensable et n'est pas cosmétique : min-height reste
+   SANS EFFET sur un élément inline non remplacé, ce que ce <span> était. Même
+   traitement que .author-info strong juste au-dessus.
+
+   `line-height` est fixée ici plutôt que laissée en héritage (1.65 du corps de
+   texte) pour que min-height vaille exactement deux lignes : 2 × 1.65em = 3.3em.
+   Les deux valeurs vont donc de pair, modifier l'une demande de revoir l'autre. */
+.author-info span { font-size: 13px; color: var(--slate-500); display: block; line-height: 1.65; min-height: 3.3em; }
 
 /* CTA */
 .section-cta { padding: 112px 0; background: var(--black-900); position: relative; overflow: hidden; text-align: center; }

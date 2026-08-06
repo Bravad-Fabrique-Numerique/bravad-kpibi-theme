@@ -201,8 +201,12 @@ while ( have_posts() ) :
 		<div class="container"><div class="page-hero-inner">
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'service_hero_label', 'Power Automate · RPA · Automatisation des processus' ) ); ?></p>
 			<h1><?php
-				echo esc_html( kpibi_f( 'service_hero_titre', 'Créer de la capacité' ) ) . '<br>';
-				echo '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'sans ajouter de ressources.' ) ) . '</strong>';
+				// Une phrase par ligne (KPIBI-36, C2). Le <br> déjà présent ici
+				// n'est pas doublé : il n'est pas précédé d'une ponctuation de fin
+				// de phrase suivie d'une espace.
+				$kpibi_h1  = esc_html( kpibi_f( 'service_hero_titre', 'Créer de la capacité' ) ) . '<br>';
+				$kpibi_h1 .= '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'sans ajouter de ressources.' ) ) . '</strong>';
+				echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 			?></h1>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'service_hero_sub', "Nous simplifions, standardisons puis automatisons tout ce qui n'apporte pas de valeur ajoutée. Vos équipes se concentrent enfin sur les clients, les décisions et la croissance." ) ); ?></p>
 			<div class="page-hero-actions">

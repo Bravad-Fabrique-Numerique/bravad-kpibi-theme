@@ -355,6 +355,41 @@ function kpibi_f_bool( $name, $default = true, $post_id = false ) {
 }
 
 /**
+ * Insère un retour à la ligne après chaque fin de phrase d'un titre de
+ * BANNIÈRE, pour qu'une phrase ne soit jamais coupée en deux par le seul
+ * hasard de la largeur du bloc (KPIBI-36, C2).
+ *
+ * Le défaut était visible sur Tableaux de bord FR : 3 lignes rendues pour
+ * 2 phrases, « Les décisions » restant seul sur la deuxième ligne. L'accueil,
+ * lui, n'était correct que par chance : rien ne forçait la coupure entre
+ * « Moins de friction. » et « Plus de capacité. », un titre retouché aurait pu
+ * la recasser. D'où une règle plutôt qu'un correctif local.
+ *
+ * ⚠️ S'applique APRÈS esc_html(), jamais avant : la fonction PRODUIT du
+ * balisage (<br>), qu'un échappement ultérieur afficherait littéralement.
+ *
+ * ⚠️ Réservée aux <h1> de bannière. Ne pas l'appliquer aux .page-hero-sub ni
+ * aux <h2> de section : ce sont des textes longs, où une coupure par phrase
+ * produirait des blocs déséquilibrés.
+ *
+ * ⚠️ Une abréviation contenant un point (« etc. », « inc. », « M. Bexton »)
+ * serait coupée à tort. Les titres de bannière sont courts et n'en contiennent
+ * aucune aujourd'hui, FR comme EN — vérifié sur les 18 pages. À revoir le jour
+ * où une abréviation apparaît dans un titre de bannière.
+ *
+ * Deux cas ne bougent pas, tous deux parce que la ponctuation n'y est pas
+ * suivie d'une espace : un titre d'une seule phrase (le point final est en fin
+ * de chaîne ou collé à </strong>), et un <br> déjà écrit dans le gabarit, qui
+ * n'est donc jamais doublé.
+ *
+ * @param string $html Contenu du <h1>, DÉJÀ échappé. Peut contenir <strong> et <br>.
+ * @return string
+ */
+function kpibi_titre_phrases( $html ) {
+	return preg_replace( '/([.!?])[ \t]+(?!<br)/u', '$1<br>', (string) $html );
+}
+
+/**
  * Helper : identifiant de la page « articles » (Réglages › Lecture) dans le
  * contexte courant.
  *
