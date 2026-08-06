@@ -93,7 +93,7 @@ function kpibi_register_service_fields() {
 	// Le gabarit retombe alors sur une grille à une seule colonne
 	// (`.split-inner.solo`), pour qu'aucune demi-grille vide ne subsiste.
 	$fields[] = $bool( 'approche_frise_afficher', "Afficher la frise numérotée et l'encadré (colonne droite)", 1, "Décoché : la colonne droite affiche l'image ci-dessous. Sans image, la section passe sur une seule colonne." );
-	$fields[] = $img( 'approche_image', 'Section approche : image de la colonne droite', "Ne sert QUE si la frise numérotée ci-dessus est masquée." );
+	$fields[] = $img( 'approche_image', 'Section approche : image de la colonne droite', "Ne sert QUE si la frise numérotée ci-dessus est masquée ; sans image, la section passe alors sur une seule colonne — il n'y a pas d'emplacement gris de remplacement ici." );
 
 	// Liste numérotée « approche » — nombre variable (repeater ACF Pro).
 	// Note : la clé des sous-champs est redéfinie (sub_field_key) pour éviter
