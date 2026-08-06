@@ -6,9 +6,24 @@
  */
 
 get_header();
+
+/*
+ * Bannière du blogue : rendue UNIQUEMENT sur l'accueil du blogue. Ce gabarit
+ * sert aussi de repli d'archive (catégorie, étiquette, auteur, date, recherche)
+ * et une archive ne doit pas hériter de la bannière du blogue.
+ *
+ * Le contexte de lecture est explicite. Sur is_home(), get_field() est appelé
+ * HORS BOUCLE : sans identifiant, la lecture dépend de la résolution implicite
+ * d'ACF, alors que le groupe est rattaché par « page_type == posts_page » et
+ * non par un identifiant de page. On désigne donc la publication à lire.
+ */
+$kpibi_blog_bg = is_home() ? kpibi_f( 'blogue_hero_image', '', kpibi_posts_page_id() ) : '';
 ?>
 
 <section class="page-hero">
+	<?php if ( $kpibi_blog_bg ) : ?>
+		<div class="page-hero-bg" style="background-image:url('<?php echo esc_url( $kpibi_blog_bg ); ?>');"></div>
+	<?php endif; ?>
 	<div class="page-hero-gradient"></div>
 	<div class="container"><div class="page-hero-inner">
 		<?php if ( is_home() ) : ?>

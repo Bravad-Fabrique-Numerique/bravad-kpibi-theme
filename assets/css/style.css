@@ -208,6 +208,14 @@ a { text-decoration: none; color: inherit; }
 .section-split { padding: 100px 0; }
 .section-split.bg-light { background: var(--slate-50); }
 .split-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+/* Filet de sécurité (KPIBI-35) : une section split dont la colonne droite n'a
+   RIEN à afficher (frise masquée et aucune image posée) passe sur une seule
+   colonne. Sans ça, la grille reste à deux colonnes dont une de hauteur 0 :
+   exactement le défaut mesuré sur /tableaux-de-bord/ et /service-applications/.
+   La classe est posée en PHP par le gabarit, pas par le CSS : lui seul sait si
+   la colonne a du contenu. Spécificité 0-2-0, elle l'emporte donc sur la règle
+   ci-dessus (0-1-0) quel que soit l'ordre du fichier. */
+.split-inner.solo { grid-template-columns: 1fr; }
 @media(max-width: 900px) { .split-inner { grid-template-columns: 1fr; gap: 48px; } }
 .split-img { width: 100%; height: 480px; object-fit: cover; border-radius: var(--radius-card); }
 /* Quand le texte est plus long que l'image, l'image reste visible (sticky) pendant que la

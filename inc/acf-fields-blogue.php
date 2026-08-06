@@ -29,11 +29,18 @@ function kpibi_register_blogue_fields() {
 	$txt  = 'kpibi_field_text';
 	$area = 'kpibi_field_area';
 	$tab  = 'kpibi_field_tab';
+	$img  = 'kpibi_field_image';
 
 	$fields = array();
 
 	// ----- BANNIÈRE -----
+	// L'image de fond manquait purement et simplement : ce groupe ne déclarait
+	// aucun champ image et index.php ne rendait aucun .page-hero-bg. Les deux
+	// pages blogue étaient donc les seules du site à porter une bannière sans
+	// photo. Ce n'était pas un champ vide, mais une fonctionnalité absente
+	// (KPIBI-35).
 	$fields[] = $tab( 'blogue_hero', 'Bannière' );
+	$fields[] = $img( 'blogue_hero_image', 'Image de fond de la bannière' );
 	$fields[] = $txt( 'blogue_hero_label', 'Sur-titre', 'Blogue · Ressources', 45 );
 	$fields[] = $txt( 'blogue_hero_titre', 'Titre', 'Blogue', 40 );
 	$fields[] = $area( 'blogue_hero_sub', 'Sous-titre', "Des articles pratiques sur l'excellence opérationnelle, les KPI, l'automatisation, les applications d'affaires et les systèmes qui soutiennent la performance.", 260 );
