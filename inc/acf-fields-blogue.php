@@ -37,7 +37,7 @@ function kpibi_register_blogue_fields() {
 	// L'image de fond manquait purement et simplement : ce groupe ne déclarait
 	// aucun champ image et index.php ne rendait aucun .page-hero-bg. Les deux
 	// pages blogue étaient donc les seules du site à porter une bannière sans
-	// photo — ce n'était pas un champ vide, mais une fonctionnalité absente
+	// photo. Ce n'était pas un champ vide, mais une fonctionnalité absente
 	// (KPIBI-35).
 	$fields[] = $tab( 'blogue_hero', 'Bannière' );
 	$fields[] = $img( 'blogue_hero_image', 'Image de fond de la bannière' );

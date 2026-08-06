@@ -256,7 +256,7 @@ while ( have_posts() ) :
 	$kpibi_approche_img   = kpibi_f( 'approche_image', '' );
 	// Colonne droite sans contenu (frise masquée, aucune image posée) : la
 	// grille passe sur UNE seule colonne. Sans ce filet, décocher la frise
-	// sans poser d'image laisse une demi-grille de hauteur 0 — exactement le
+	// sans poser d'image laisse une demi-grille de hauteur 0 : exactement le
 	// défaut que KPIBI-35 corrige.
 	$kpibi_approche_split = ( ! $kpibi_approche_frise && ! $kpibi_approche_img ) ? 'split-inner solo' : 'split-inner';
 	?>

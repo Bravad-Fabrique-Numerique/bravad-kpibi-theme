@@ -210,7 +210,7 @@ a { text-decoration: none; color: inherit; }
 .split-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 /* Filet de sécurité (KPIBI-35) : une section split dont la colonne droite n'a
    RIEN à afficher (frise masquée et aucune image posée) passe sur une seule
-   colonne. Sans ça, la grille reste à deux colonnes dont une de hauteur 0 —
+   colonne. Sans ça, la grille reste à deux colonnes dont une de hauteur 0 :
    exactement le défaut mesuré sur /tableaux-de-bord/ et /service-applications/.
    La classe est posée en PHP par le gabarit, pas par le CSS : lui seul sait si
    la colonne a du contenu. Spécificité 0-2-0, elle l'emporte donc sur la règle

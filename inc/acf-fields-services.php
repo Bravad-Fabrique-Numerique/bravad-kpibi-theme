@@ -75,7 +75,7 @@ function kpibi_register_service_fields() {
 	// Lecture au gabarit avec kpibi_f_bool(), JAMAIS kpibi_f() : celui-ci
 	// laisse passer `false` et une case décochée resterait sans effet.
 	$fields[] = $tab( 'service_approche', 'Approche' );
-	$fields[] = $bool( 'approche_afficher', 'Afficher la section « Notre approche »', 1, "Décoché : la section entière disparaît du HTML — elle n'est plus livrée ni indexée." );
+	$fields[] = $bool( 'approche_afficher', 'Afficher la section « Notre approche »', 1, "Décoché : la section entière disparaît du HTML, elle n'est plus livrée ni indexée." );
 	$fields[] = $txt( 'approche_label', 'Sur-titre', 'Notre approche', 40 );
 	$fields[] = $txt( 'approche_titre', 'Titre — début', 'Un système bien conçu crée', 45 );
 	$fields[] = $txt( 'approche_titre_fort', 'Titre — partie en or', 'plus de performance', 40 );
@@ -88,12 +88,12 @@ function kpibi_register_service_fields() {
 
 	// Colonne DROITE de la section approche : soit la frise numérotée +
 	// l'encadré, soit une image de remplacement. Masquer la frise sans poser
-	// d'image laissait la colonne vide et la grille à deux colonnes — le défaut
+	// d'image laissait la colonne vide et la grille à deux colonnes : le défaut
 	// mesuré sur Tableaux de bord et Applications (hauteurs 563/0 et 535/0).
 	// Le gabarit retombe alors sur une grille à une seule colonne
 	// (`.split-inner.solo`), pour qu'aucune demi-grille vide ne subsiste.
 	$fields[] = $bool( 'approche_frise_afficher', "Afficher la frise numérotée et l'encadré (colonne droite)", 1, "Décoché : la colonne droite affiche l'image ci-dessous. Sans image, la section passe sur une seule colonne." );
-	$fields[] = $img( 'approche_image', 'Section approche : image de la colonne droite', "Ne sert QUE si la frise numérotée ci-dessus est masquée ; sans image, la section passe alors sur une seule colonne — il n'y a pas d'emplacement gris de remplacement ici." );
+	$fields[] = $img( 'approche_image', 'Section approche : image de la colonne droite', "Ne sert QUE si la frise numérotée ci-dessus est masquée ; sans image, la section passe alors sur une seule colonne. Il n'y a pas d'emplacement gris de remplacement ici." );
 
 	// Liste numérotée « approche » — nombre variable (repeater ACF Pro).
 	// Note : la clé des sous-champs est redéfinie (sub_field_key) pour éviter
@@ -123,7 +123,7 @@ function kpibi_register_service_fields() {
 
 	// ----- ÉTAPES -----
 	$fields[] = $tab( 'service_etapes', 'Étapes' );
-	$fields[] = $bool( 'etapes_afficher', 'Afficher la section « Ce qu\'on fait concrètement »', 1, "Décoché : la section entière disparaît du HTML — elle n'est plus livrée ni indexée." );
+	$fields[] = $bool( 'etapes_afficher', 'Afficher la section « Ce qu\'on fait concrètement »', 1, "Décoché : la section entière disparaît du HTML, elle n'est plus livrée ni indexée." );
 	$fields[] = $txt( 'etapes_label', 'Sur-titre', "Ce qu'on fait concrètement", 45 );
 	$fields[] = $txt( 'etapes_titre', 'Titre — début', 'Faire en sorte que la performance devienne', 55 );
 	$fields[] = $txt( 'etapes_titre_fort', 'Titre — partie en or', 'le résultat naturel du système', 45 );
@@ -152,8 +152,8 @@ function kpibi_register_service_fields() {
 	$fields[] = $tab( 'service_pourqui', 'Section « pour qui »' );
 	// Les champs pourqui_* restent visibles en wp-admin même quand la section
 	// est décochée : c'est la contrepartie assumée d'un interrupteur plutôt que
-	// d'une suppression — le contenu est conservé et la section se rallume.
-	$fields[] = $bool( 'pourqui_afficher', 'Afficher la section « Pour qui »', 1, "Décoché : la section entière disparaît du HTML — elle n'est plus livrée ni indexée." );
+	// d'une suppression : le contenu est conservé et la section se rallume.
+	$fields[] = $bool( 'pourqui_afficher', 'Afficher la section « Pour qui »', 1, "Décoché : la section entière disparaît du HTML, elle n'est plus livrée ni indexée." );
 	$fields[] = $img( 'pourqui_image', 'Image' );
 	$fields[] = $txt( 'pourqui_label', 'Sur-titre', 'Pour qui nous travaillons', 45 );
 	$fields[] = $txt( 'pourqui_titre', 'Titre — début', 'Des dirigeants qui veulent', 40 );

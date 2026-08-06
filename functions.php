@@ -333,7 +333,7 @@ function kpibi_f( $name, $default = '', $post_id = false ) {
  * deux raisons :
  *
  * 1. kpibi_f() fait passer sa valeur par kpibi_typo_deep(), écrit pour du
- *    texte — un booléen n'a rien à y faire.
+ *    texte, et un booléen n'a rien à y faire.
  * 2. Son test de vacuité (`null !== $value && '' !== $value`) laisse passer
  *    `false` : une case DÉCOCHÉE retomberait sur la valeur par défaut et la
  *    section resterait affichée. Exactement le contraire de ce qu'on demande.
