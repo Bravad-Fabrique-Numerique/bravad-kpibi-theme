@@ -82,7 +82,13 @@ function kpibi_register_service_fields() {
 	$fields[] = $txt( 'approche_titre_fin', 'Titre — fin (optionnel)', "qu'un effort supplémentaire", 40 );
 	$fields[] = $area( 'approche_texte1', 'Paragraphe 1', 'Vos employés travaillent fort. Pourtant, les mêmes erreurs reviennent, les délais s\'accumulent et la croissance crée plus de friction qu\'elle n\'en résout.', 320 );
 	$fields[] = $area( 'approche_texte2', 'Paragraphe 2', "Lorsqu'un problème survient, la réaction naturelle consiste souvent à ajouter de la formation, du contrôle ou des procédures. Notre approche est différente : nous cherchons d'abord à comprendre comment les processus, les outils, l'information et l'environnement de travail influencent les comportements et les résultats.", 420 );
-	$fields[] = $area( 'approche_texte3', 'Paragraphe 3', "Parce qu'un système bien conçu crée généralement plus de performance qu'un effort humain supplémentaire.", 220 );
+	// Sans valeur par défaut (KPIBI-36, A2) : sur /en/process-optimization/, ce
+	// paragraphe énumérait les cinq éléments de la frise affichée juste à côté.
+	// Le champ est partagé par les trois gabarits service ; il doit donc pouvoir
+	// être vidé PAGE PAR PAGE, d'où le retrait du défaut ici ET du second
+	// argument de kpibi_f() dans les trois gabarits. Une page dont le champ est
+	// rempli garde son texte ; seule une page au champ vide perd le paragraphe.
+	$fields[] = $area( 'approche_texte3', 'Paragraphe 3', '', 220 );
 	$fields[] = $txt( 'approche_btn_texte', 'Bouton — texte (optionnel)', 'Voir notre démarche', 35 );
 	$fields[] = $txt( 'approche_btn_url', 'Bouton — lien', '#demarche' );
 

@@ -153,7 +153,16 @@ while ( have_posts() ) :
 				?></h2>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte1', 'Vos employés travaillent fort. Pourtant, les mêmes erreurs reviennent, les délais s\'accumulent et la croissance crée plus de friction qu\'elle n\'en résout.' ) ); ?></p>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte2', "Lorsqu'un problème survient, la réaction naturelle consiste souvent à ajouter de la formation, du contrôle ou des procédures. Notre approche est différente : nous cherchons d'abord à comprendre comment les processus, les outils, l'information et l'environnement de travail influencent les comportements et les résultats." ) ); ?></p>
-				<p><?php echo esc_html( kpibi_f( 'approche_texte3', "Parce qu'un système bien conçu crée généralement plus de performance qu'un effort humain supplémentaire." ) ); ?></p>
+				<?php
+				// Paragraphe 3 : plus de valeur par défaut, ni ici ni au champ ACF
+				// (KPIBI-36, A2), pour qu'il puisse être vidé page par page. Un
+				// champ vide ne rend AUCUN paragraphe, pas un <p> vide qui
+				// garderait ses marges.
+				$kpibi_approche_texte3 = kpibi_f( 'approche_texte3' );
+				?>
+				<?php if ( '' !== trim( $kpibi_approche_texte3 ) ) : ?>
+					<p><?php echo esc_html( $kpibi_approche_texte3 ); ?></p>
+				<?php endif; ?>
 				<?php $kpibi_approche_btn_url = kpibi_f( 'approche_btn_url', '#demarche' ); ?>
 				<?php $kpibi_approche_btn_texte = kpibi_f( 'approche_btn_texte', 'Voir notre démarche' ); ?>
 				<?php if ( $kpibi_approche_btn_texte ) : ?>

@@ -41,7 +41,11 @@ while ( have_posts() ) :
 		),
 		array(
 			'titre' => 'Applications mobiles terrain',
-			'texte' => 'Applications mobiles pour vos équipes sur la route, accessibles en tout temps, même hors ligne.',
+			// « , même hors ligne » retiré (KPIBI-36, A3) : l'affirmation était
+			// fausse. Ce texte ne vient pas d'ACF mais de ce tableau de défauts,
+			// et aucun champ en base ne le porte : c'est bien cette chaîne qui
+			// s'affiche, sur la page FR comme sur la page EN.
+			'texte' => 'Applications mobiles pour vos équipes sur la route, accessibles en tout temps.',
 			'icone' => 'mobile',
 		),
 		array(
@@ -254,7 +258,15 @@ while ( have_posts() ) :
 				?></h2>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte1', 'Vos employés travaillent fort. Pourtant, les mêmes erreurs reviennent, les délais s\'accumulent et la croissance crée plus de friction qu\'elle n\'en résout.' ) ); ?></p>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte2', "Lorsqu'un problème survient, la réaction naturelle consiste souvent à ajouter de la formation, du contrôle ou des procédures. Notre approche est différente : nous cherchons d'abord à comprendre comment les processus, les outils, l'information et l'environnement de travail influencent les comportements et les résultats." ) ); ?></p>
-				<p><?php echo esc_html( kpibi_f( 'approche_texte3', "Parce qu'un système bien conçu crée généralement plus de performance qu'un effort humain supplémentaire." ) ); ?></p>
+				<?php
+				// Paragraphe 3 : voir KPIBI-36 (A2). Le champ approche_texte3 est
+				// partagé par les trois gabarits service ; le défaut est retiré
+				// partout, sinon le vider sur une page le ferait réapparaître ici.
+				$kpibi_approche_texte3 = kpibi_f( 'approche_texte3' );
+				?>
+				<?php if ( '' !== trim( $kpibi_approche_texte3 ) ) : ?>
+					<p><?php echo esc_html( $kpibi_approche_texte3 ); ?></p>
+				<?php endif; ?>
 				<?php $kpibi_approche_btn_url = kpibi_f( 'approche_btn_url', '#demarche' ); ?>
 				<?php $kpibi_approche_btn_texte = kpibi_f( 'approche_btn_texte', 'Voir notre démarche' ); ?>
 				<?php if ( $kpibi_approche_btn_texte ) : ?>

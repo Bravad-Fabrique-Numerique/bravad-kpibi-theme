@@ -118,7 +118,12 @@ function kpibi_register_forfait_fields() {
 		$fields[] = $txt( "forfait_aide{$n}_titre", "Carte {$n} — titre", $d[0], 40 );
 		$fields[] = $area( "forfait_aide{$n}_texte", "Carte {$n} — texte", $d[1], 200 );
 	}
-	$fields[] = $area( 'forfait_aide_note', 'Note de bas de section', "Les programmes, montants et critères d'admissibilité varient et évoluent. Liste finale à valider et à mettre à jour.", 200 );
+	// Sans valeur par défaut (KPIBI-36, A1) : la note portait « Liste finale à
+	// valider et à mettre à jour », une note de travail interne publiée en ligne.
+	// Tant qu'un défaut existait ici ET en second argument de kpibi_f() au
+	// gabarit, vider le champ en wp-admin le faisait réapparaître (story S3).
+	// Champ vide = aucun paragraphe rendu, voir template-forfait.php.
+	$fields[] = $area( 'forfait_aide_note', 'Note de bas de section', '', 200 );
 
 	// ----- LE PARCOURS -----
 	$fields[] = $tab( 'forfait_parcours', 'Le parcours' );

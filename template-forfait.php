@@ -188,7 +188,16 @@ get_header();
 					</div>
 				<?php endforeach; ?>
 			</div>
-			<p class="aide-note"><?php echo esc_html( kpibi_f( 'forfait_aide_note', "Les programmes, montants et critères d'admissibilité varient et évoluent. Liste finale à valider et à mettre à jour." ) ); ?></p>
+			<?php
+			// Note de bas de section : plus de valeur par défaut, ni ici ni au
+			// champ ACF (KPIBI-36, A1). Le paragraphe n'est rendu que si le champ
+			// porte un texte : un champ vide ne doit pas laisser un <p> vide, qui
+			// garderait ses marges.
+			$kpibi_aide_note = kpibi_f( 'forfait_aide_note' );
+			?>
+			<?php if ( '' !== trim( $kpibi_aide_note ) ) : ?>
+				<p class="aide-note"><?php echo esc_html( $kpibi_aide_note ); ?></p>
+			<?php endif; ?>
 		</div>
 	</section>
 
