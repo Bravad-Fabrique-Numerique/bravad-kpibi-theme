@@ -70,6 +70,41 @@ while ( have_posts() ) :
 	);
 	$kpibi_svcauto_tuiles_items = kpibi_typo_deep( get_field( 'svcauto_tuiles' ) ?: $kpibi_svcauto_tuiles_defaults );
 
+	/*
+	 * Cas de la section « Pour qui » (KPIBI-36, B3) — contenu de la maquette
+	 * approuvée maquette/service-automatisation.html.
+	 *
+	 * CINQ cas, pas six : la demande en annonçait six, la maquette approuvée en
+	 * contient cinq. Les cinq sont livrés tels quels, aucun sixième inventé.
+	 *
+	 * Les défauts sont portés ICI, comme pour les tuiles ci-dessus : un répéteur
+	 * ACF n'a pas de valeur par défaut, et sans cette liste la section resterait
+	 * vide tant que le contenu n'aurait pas été saisi page par page.
+	 */
+	$kpibi_svcauto_pourqui_defaults = array(
+		array(
+			'titre' => 'Vous cherchez à réduire les erreurs, les délais, les coûts et la variabilité',
+			'texte' => "Vos processus manquent de constance d'une fois à l'autre.",
+		),
+		array(
+			'titre' => 'Vous dépendez encore beaucoup de tâches manuelles et répétitives',
+			'texte' => 'Une grande part du travail pourrait être exécutée automatiquement.',
+		),
+		array(
+			'titre' => "Vous avez des goulots d'étranglement qui limitent votre croissance",
+			'texte' => "Certaines étapes freinent l'ensemble de vos opérations.",
+		),
+		array(
+			'titre' => 'Vous faites plusieurs saisies entre différents systèmes',
+			'texte' => "Les mêmes données sont ressaisies d'un outil à l'autre.",
+		),
+		array(
+			'titre' => 'Vous voulez faire plus avec vos ressources actuelles',
+			'texte' => 'Augmenter votre capacité sans embaucher proportionnellement.',
+		),
+	);
+	$kpibi_svcauto_pourqui_items = kpibi_typo_deep( get_field( 'svcauto_pourqui_items' ) ?: $kpibi_svcauto_pourqui_defaults );
+
 	/* ----- Valeurs par défaut des sections COMMUNES (contenu de service-optimisation.html) ----- */
 
 	$kpibi_approche_defaults = array(
@@ -340,16 +375,22 @@ while ( have_posts() ) :
 	<?php endif; ?>
 
 	<?php if ( kpibi_f_bool( 'pourqui_afficher' ) ) : ?>
-	<!-- POUR QUI -->
+	<!--
+		POUR QUI
+
+		Ordre TEXTE / IMAGE (KPIBI-36, C1) : les trois sections split de cette page
+		rendaient TEXTE/IMAGE, puis IMAGE/TEXTE, puis IMAGE/TEXTE — les deux
+		dernières identiques, l'alternance cassait. L'ordre visuel suit l'ordre du
+		DOM, aucune propriété `order` en CSS n'intervient : échanger les deux
+		enfants de .split-inner suffit.
+
+		Ce gabarit est dédié aux deux seules pages Automatisation ; le bloc
+		équivalent des deux autres gabarits service, où l'alternance est correcte,
+		n'est pas touché.
+	-->
 	<section class="section-split">
 		<div class="container"><div class="split-inner">
-			<?php $kpibi_pourqui_img = kpibi_f( 'pourqui_image', '' ); ?>
-			<?php if ( $kpibi_pourqui_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourqui_img, kpibi__( 'Illustration de la section « Pour qui »' ) ) ); ?>" class="split-img reveal" loading="lazy">
-			<?php else : ?>
-				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
-			<?php endif; ?>
-			<div class="split-content reveal reveal-delay-1">
+			<div class="split-content reveal">
 				<p class="section-label"><?php echo esc_html( kpibi_f( 'pourqui_label', 'Pour qui nous travaillons' ) ); ?></p>
 				<h2><?php
 					echo esc_html( kpibi_f( 'pourqui_titre', 'Des dirigeants qui veulent' ) ) . ' ';
@@ -357,7 +398,31 @@ while ( have_posts() ) :
 				?></h2>
 				<p><?php echo esc_html( kpibi_f( 'pourqui_texte1', 'Nous travaillons avec des dirigeants qui veulent augmenter leur capacité sans nécessairement embaucher, réduire leurs coûts opérationnels ou soutenir une croissance qui commence à créer plus de friction que de valeur.' ) ); ?></p>
 				<p><?php echo esc_html( kpibi_f( 'pourqui_texte2', 'Nos clients viennent de secteurs très variés : fabrication, distribution, construction, services professionnels, santé, technologies, commerce de détail et secteur municipal. Ce qu\'ils ont en commun, c\'est que leur croissance ou leur complexité exige des processus et des systèmes mieux structurés.' ) ); ?></p>
+				<?php if ( $kpibi_svcauto_pourqui_items ) : ?>
+					<?php
+					// Liste des cas (KPIBI-36, B3).
+					//
+					// Composant .approche-timeline et NON .diff-numbered, malgré le
+					// markup de la maquette : .diff-item-num est écrit pour fond
+					// SOMBRE (bordures et textes en rgba(255,255,255,…)) et serait
+					// illisible ici, .section-split étant sur fond clair. Le commentaire
+					// de style.css est explicite : .approche-timeline a justement été
+					// créée pour remplacer .diff-item-num sur fond clair, ce rendu-là
+					// ayant été jugé « trop tableau » par le client.
+					?>
+					<div class="approche-timeline" style="margin-top:8px;">
+						<?php foreach ( $kpibi_svcauto_pourqui_items as $kpibi_i => $kpibi_cas ) : ?>
+							<div class="approche-timeline-item"><span class="approche-timeline-num"><?php echo esc_html( $kpibi_i + 1 ); ?></span><div class="approche-timeline-content"><strong><?php echo esc_html( $kpibi_cas['titre'] ); ?></strong><span><?php echo esc_html( $kpibi_cas['texte'] ); ?></span></div></div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
 			</div>
+			<?php $kpibi_pourqui_img = kpibi_f( 'pourqui_image', '' ); ?>
+			<?php if ( $kpibi_pourqui_img ) : ?>
+				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourqui_img, kpibi__( 'Illustration de la section « Pour qui »' ) ) ); ?>" class="split-img reveal reveal-delay-1" loading="lazy">
+			<?php else : ?>
+				<div class="split-img reveal reveal-delay-1" style="background:#ECEAE3;" aria-hidden="true"></div>
+			<?php endif; ?>
 		</div></div>
 	</section>
 	<?php endif; ?>
