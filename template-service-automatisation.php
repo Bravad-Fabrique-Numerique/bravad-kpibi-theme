@@ -250,9 +250,19 @@ while ( have_posts() ) :
 		</div></div>
 	</section>
 
+	<?php if ( kpibi_f_bool( 'approche_afficher' ) ) : ?>
+	<?php
+	$kpibi_approche_frise = kpibi_f_bool( 'approche_frise_afficher' );
+	$kpibi_approche_img   = kpibi_f( 'approche_image', '' );
+	// Colonne droite sans contenu (frise masquée, aucune image posée) : la
+	// grille passe sur UNE seule colonne. Sans ce filet, décocher la frise
+	// sans poser d'image laisse une demi-grille de hauteur 0 — exactement le
+	// défaut que KPIBI-35 corrige.
+	$kpibi_approche_split = ( ! $kpibi_approche_frise && ! $kpibi_approche_img ) ? 'split-inner solo' : 'split-inner';
+	?>
 	<!-- APPROCHE -->
 	<section class="section-split bg-light">
-		<div class="container"><div class="split-inner">
+		<div class="container"><div class="<?php echo esc_attr( $kpibi_approche_split ); ?>">
 			<div class="split-content reveal">
 				<p class="section-label"><?php echo esc_html( kpibi_f( 'approche_label', 'Notre approche' ) ); ?></p>
 				<h2><?php
@@ -272,6 +282,7 @@ while ( have_posts() ) :
 					<a href="<?php echo esc_url( $kpibi_approche_btn_url ); ?>" class="btn btn-outline-dark" style="margin-top:8px;"><?php echo esc_html( $kpibi_approche_btn_texte ); ?></a>
 				<?php endif; ?>
 			</div>
+			<?php if ( $kpibi_approche_frise ) : ?>
 			<div class="reveal reveal-delay-1">
 				<div class="approche-timeline" style="margin-bottom:0;">
 					<?php foreach ( $kpibi_approche_items as $kpibi_i => $kpibi_item ) : ?>
@@ -283,9 +294,14 @@ while ( have_posts() ) :
 					<div class="rapport-text"><strong style="color:var(--slate-900);"><?php echo esc_html( kpibi_f( 'service_rapport_titre', 'Les fondations de la performance' ) ); ?></strong><span style="color:var(--slate-500);"><?php echo esc_html( kpibi_f( 'service_rapport_texte', "L'automatisation d'un mauvais processus accélère rarement les bons résultats. C'est pourquoi nous intervenons dans cet ordre." ) ); ?></span></div>
 				</div>
 			</div>
+			<?php elseif ( $kpibi_approche_img ) : ?>
+			<img src="<?php echo esc_url( $kpibi_approche_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_approche_img, kpibi__( 'Illustration de la section « Notre approche »' ) ) ); ?>" class="split-img reveal reveal-delay-1" loading="lazy">
+			<?php endif; ?>
 		</div></div>
 	</section>
+	<?php endif; ?>
 
+	<?php if ( kpibi_f_bool( 'etapes_afficher' ) ) : ?>
 	<!-- ÉTAPES -->
 	<section class="section-steps" id="demarche">
 		<div class="container">
@@ -313,7 +329,9 @@ while ( have_posts() ) :
 			</div>
 		</div>
 	</section>
+	<?php endif; ?>
 
+	<?php if ( kpibi_f_bool( 'pourqui_afficher' ) ) : ?>
 	<!-- POUR QUI -->
 	<section class="section-split">
 		<div class="container"><div class="split-inner">
@@ -334,6 +352,7 @@ while ( have_posts() ) :
 			</div>
 		</div></div>
 	</section>
+	<?php endif; ?>
 
 	<!-- BÉNÉFICES -->
 	<section class="section-benefits">

@@ -858,6 +858,13 @@ function kpibi_register_strings() {
 		'alt_cas_client'           => 'Cas client KPIBI', // KPIBI case study
 		'alt_blog_article'         => 'Article du blogue KPIBI', // KPIBI blog post
 		/*
+		 * Repli de texte alternatif de l'image qui remplace la frise numérotée
+		 * dans la colonne droite de la section « approche » (KPIBI-35). Même
+		 * régime que les replis ci-dessus : il ne sert que si l'image n'a pas
+		 * de texte alternatif propre en médiathèque.
+		 */
+		'alt_approche'             => 'Illustration de la section « Notre approche »', // Illustration for the "Our approach" section
+		/*
 		 * Libellés du lien de témoins et de la modale de consultation (KPIBI-33).
 		 * Ils étaient choisis par un ternaire sur pll_current_language() dans
 		 * footer.php : bilingues à l'écran, mais hors de portée du client, qui ne

@@ -43,6 +43,7 @@ function kpibi_register_service_fields() {
 	$area = 'kpibi_field_area';
 	$tab  = 'kpibi_field_tab';
 	$img  = 'kpibi_field_image';
+	$bool = 'kpibi_field_bool';
 
 	$fields = array();
 
@@ -65,7 +66,16 @@ function kpibi_register_service_fields() {
 	$fields[] = $txt( 'service_hero_cta2_url', 'Bouton 2 — lien', '' );
 
 	// ----- APPROCHE -----
+	//
+	// Les interrupteurs `*_afficher` de ce groupe décident CÔTÉ SERVEUR si une
+	// section est rendue (KPIBI-35). Ils remplacent un bloc JavaScript qui
+	// masquait des sections après le rendu, selon l'identifiant de page : le
+	// HTML était livré et indexé, et un flash de contenu précédait le masquage.
+	//
+	// Lecture au gabarit avec kpibi_f_bool(), JAMAIS kpibi_f() : celui-ci
+	// laisse passer `false` et une case décochée resterait sans effet.
 	$fields[] = $tab( 'service_approche', 'Approche' );
+	$fields[] = $bool( 'approche_afficher', 'Afficher la section « Notre approche »', 1, "Décoché : la section entière disparaît du HTML — elle n'est plus livrée ni indexée." );
 	$fields[] = $txt( 'approche_label', 'Sur-titre', 'Notre approche', 40 );
 	$fields[] = $txt( 'approche_titre', 'Titre — début', 'Un système bien conçu crée', 45 );
 	$fields[] = $txt( 'approche_titre_fort', 'Titre — partie en or', 'plus de performance', 40 );
@@ -75,6 +85,15 @@ function kpibi_register_service_fields() {
 	$fields[] = $area( 'approche_texte3', 'Paragraphe 3', "Parce qu'un système bien conçu crée généralement plus de performance qu'un effort humain supplémentaire.", 220 );
 	$fields[] = $txt( 'approche_btn_texte', 'Bouton — texte (optionnel)', 'Voir notre démarche', 35 );
 	$fields[] = $txt( 'approche_btn_url', 'Bouton — lien', '#demarche' );
+
+	// Colonne DROITE de la section approche : soit la frise numérotée +
+	// l'encadré, soit une image de remplacement. Masquer la frise sans poser
+	// d'image laissait la colonne vide et la grille à deux colonnes — le défaut
+	// mesuré sur Tableaux de bord et Applications (hauteurs 563/0 et 535/0).
+	// Le gabarit retombe alors sur une grille à une seule colonne
+	// (`.split-inner.solo`), pour qu'aucune demi-grille vide ne subsiste.
+	$fields[] = $bool( 'approche_frise_afficher', "Afficher la frise numérotée et l'encadré (colonne droite)", 1, "Décoché : la colonne droite affiche l'image ci-dessous. Sans image, la section passe sur une seule colonne." );
+	$fields[] = $img( 'approche_image', 'Section approche : image de la colonne droite', "Ne sert QUE si la frise numérotée ci-dessus est masquée." );
 
 	// Liste numérotée « approche » — nombre variable (repeater ACF Pro).
 	// Note : la clé des sous-champs est redéfinie (sub_field_key) pour éviter
@@ -104,6 +123,7 @@ function kpibi_register_service_fields() {
 
 	// ----- ÉTAPES -----
 	$fields[] = $tab( 'service_etapes', 'Étapes' );
+	$fields[] = $bool( 'etapes_afficher', 'Afficher la section « Ce qu\'on fait concrètement »', 1, "Décoché : la section entière disparaît du HTML — elle n'est plus livrée ni indexée." );
 	$fields[] = $txt( 'etapes_label', 'Sur-titre', "Ce qu'on fait concrètement", 45 );
 	$fields[] = $txt( 'etapes_titre', 'Titre — début', 'Faire en sorte que la performance devienne', 55 );
 	$fields[] = $txt( 'etapes_titre_fort', 'Titre — partie en or', 'le résultat naturel du système', 45 );
@@ -130,6 +150,10 @@ function kpibi_register_service_fields() {
 
 	// ----- SECTION « POUR QUI » -----
 	$fields[] = $tab( 'service_pourqui', 'Section « pour qui »' );
+	// Les champs pourqui_* restent visibles en wp-admin même quand la section
+	// est décochée : c'est la contrepartie assumée d'un interrupteur plutôt que
+	// d'une suppression — le contenu est conservé et la section se rallume.
+	$fields[] = $bool( 'pourqui_afficher', 'Afficher la section « Pour qui »', 1, "Décoché : la section entière disparaît du HTML — elle n'est plus livrée ni indexée." );
 	$fields[] = $img( 'pourqui_image', 'Image' );
 	$fields[] = $txt( 'pourqui_label', 'Sur-titre', 'Pour qui nous travaillons', 45 );
 	$fields[] = $txt( 'pourqui_titre', 'Titre — début', 'Des dirigeants qui veulent', 40 );
