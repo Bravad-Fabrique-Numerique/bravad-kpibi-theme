@@ -26,12 +26,15 @@ $kpibi_hero_img = kpibi_f( 'hero_image', '' );
 	<div class="container"><div class="hero-inner">
 		<p class="hero-label"><?php echo esc_html( kpibi_f( 'hero_label', 'Optimisation des processus • Automatisation • Tableaux de bord KPI' ) ); ?></p>
 		<h1 id="hero-heading"><?php
-			echo esc_html( kpibi_f( 'hero_titre', 'Moins de friction. Plus de capacité.' ) );
-			echo '<br><strong>' . esc_html( kpibi_f( 'hero_titre_fort', 'Sans embaucher.' ) ) . '</strong>';
+			// Une phrase par ligne (KPIBI-36, C2) : le titre est assemblé puis
+			// passé au helper, APRÈS esc_html() sur chaque fragment.
+			$kpibi_h1  = esc_html( kpibi_f( 'hero_titre', 'Moins de friction. Plus de capacité.' ) );
+			$kpibi_h1 .= '<br><strong>' . esc_html( kpibi_f( 'hero_titre_fort', 'Sans embaucher.' ) ) . '</strong>';
 			$kpibi_hero_fin = kpibi_f( 'hero_titre_fin', '' );
 			if ( $kpibi_hero_fin ) {
-				echo ' ' . esc_html( $kpibi_hero_fin );
+				$kpibi_h1 .= ' ' . esc_html( $kpibi_hero_fin );
 			}
+			echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 		?></h1>
 		<p class="hero-sub"><?php echo nl2br( esc_html( kpibi_f( 'hero_sub', "Vos opérations sont complexes. Nos solutions, elles, ne le sont pas. Nous concevons des processus, des automatisations et des outils qui s'adaptent à votre réalité, pour que la performance devienne le résultat naturel de votre système, pas un effort quotidien." ) ) ); ?></p>
 		<div class="hero-actions">

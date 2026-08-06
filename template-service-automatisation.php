@@ -70,6 +70,41 @@ while ( have_posts() ) :
 	);
 	$kpibi_svcauto_tuiles_items = kpibi_typo_deep( get_field( 'svcauto_tuiles' ) ?: $kpibi_svcauto_tuiles_defaults );
 
+	/*
+	 * Cas de la section « Pour qui » (KPIBI-36, B3) : contenu de la maquette
+	 * approuvée maquette/service-automatisation.html.
+	 *
+	 * CINQ cas, pas six : la demande en annonçait six, la maquette approuvée en
+	 * contient cinq. Les cinq sont livrés tels quels, aucun sixième inventé.
+	 *
+	 * Les défauts sont portés ICI, comme pour les tuiles ci-dessus : un répéteur
+	 * ACF n'a pas de valeur par défaut, et sans cette liste la section resterait
+	 * vide tant que le contenu n'aurait pas été saisi page par page.
+	 */
+	$kpibi_svcauto_pourqui_defaults = array(
+		array(
+			'titre' => 'Vous cherchez à réduire les erreurs, les délais, les coûts et la variabilité',
+			'texte' => "Vos processus manquent de constance d'une fois à l'autre.",
+		),
+		array(
+			'titre' => 'Vous dépendez encore beaucoup de tâches manuelles et répétitives',
+			'texte' => 'Une grande part du travail pourrait être exécutée automatiquement.',
+		),
+		array(
+			'titre' => "Vous avez des goulots d'étranglement qui limitent votre croissance",
+			'texte' => "Certaines étapes freinent l'ensemble de vos opérations.",
+		),
+		array(
+			'titre' => 'Vous faites plusieurs saisies entre différents systèmes',
+			'texte' => "Les mêmes données sont ressaisies d'un outil à l'autre.",
+		),
+		array(
+			'titre' => 'Vous voulez faire plus avec vos ressources actuelles',
+			'texte' => 'Augmenter votre capacité sans embaucher proportionnellement.',
+		),
+	);
+	$kpibi_svcauto_pourqui_items = kpibi_typo_deep( get_field( 'svcauto_pourqui_items' ) ?: $kpibi_svcauto_pourqui_defaults );
+
 	/* ----- Valeurs par défaut des sections COMMUNES (contenu de service-optimisation.html) ----- */
 
 	$kpibi_approche_defaults = array(
@@ -166,8 +201,12 @@ while ( have_posts() ) :
 		<div class="container"><div class="page-hero-inner">
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'service_hero_label', 'Power Automate · RPA · Automatisation des processus' ) ); ?></p>
 			<h1><?php
-				echo esc_html( kpibi_f( 'service_hero_titre', 'Créer de la capacité' ) ) . '<br>';
-				echo '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'sans ajouter de ressources.' ) ) . '</strong>';
+				// Une phrase par ligne (KPIBI-36, C2). Le <br> déjà présent ici
+				// n'est pas doublé : il n'est pas précédé d'une ponctuation de fin
+				// de phrase suivie d'une espace.
+				$kpibi_h1  = esc_html( kpibi_f( 'service_hero_titre', 'Créer de la capacité' ) ) . '<br>';
+				$kpibi_h1 .= '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'sans ajouter de ressources.' ) ) . '</strong>';
+				echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 			?></h1>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'service_hero_sub', "Nous simplifions, standardisons puis automatisons tout ce qui n'apporte pas de valeur ajoutée. Vos équipes se concentrent enfin sur les clients, les décisions et la croissance." ) ); ?></p>
 			<div class="page-hero-actions">
@@ -275,7 +314,15 @@ while ( have_posts() ) :
 				?></h2>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte1', 'Vos employés travaillent fort. Pourtant, les mêmes erreurs reviennent, les délais s\'accumulent et la croissance crée plus de friction qu\'elle n\'en résout.' ) ); ?></p>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte2', "Lorsqu'un problème survient, la réaction naturelle consiste souvent à ajouter de la formation, du contrôle ou des procédures. Notre approche est différente : nous cherchons d'abord à comprendre comment les processus, les outils, l'information et l'environnement de travail influencent les comportements et les résultats." ) ); ?></p>
-				<p><?php echo esc_html( kpibi_f( 'approche_texte3', "Parce qu'un système bien conçu crée généralement plus de performance qu'un effort humain supplémentaire." ) ); ?></p>
+				<?php
+				// Paragraphe 3 : voir KPIBI-36 (A2). Le champ approche_texte3 est
+				// partagé par les trois gabarits service ; le défaut est retiré
+				// partout, sinon le vider sur une page le ferait réapparaître ici.
+				$kpibi_approche_texte3 = kpibi_f( 'approche_texte3' );
+				?>
+				<?php if ( '' !== trim( $kpibi_approche_texte3 ) ) : ?>
+					<p><?php echo esc_html( $kpibi_approche_texte3 ); ?></p>
+				<?php endif; ?>
 				<?php $kpibi_approche_btn_url = kpibi_f( 'approche_btn_url', '#demarche' ); ?>
 				<?php $kpibi_approche_btn_texte = kpibi_f( 'approche_btn_texte', 'Voir notre démarche' ); ?>
 				<?php if ( $kpibi_approche_btn_texte ) : ?>
@@ -332,16 +379,22 @@ while ( have_posts() ) :
 	<?php endif; ?>
 
 	<?php if ( kpibi_f_bool( 'pourqui_afficher' ) ) : ?>
-	<!-- POUR QUI -->
+	<!--
+		POUR QUI
+
+		Ordre TEXTE / IMAGE (KPIBI-36, C1) : les trois sections split de cette page
+		rendaient TEXTE/IMAGE, puis IMAGE/TEXTE, puis IMAGE/TEXTE : les deux
+		dernières identiques, l'alternance cassait. L'ordre visuel suit l'ordre du
+		DOM, aucune propriété `order` en CSS n'intervient : échanger les deux
+		enfants de .split-inner suffit.
+
+		Ce gabarit est dédié aux deux seules pages Automatisation ; le bloc
+		équivalent des deux autres gabarits service, où l'alternance est correcte,
+		n'est pas touché.
+	-->
 	<section class="section-split">
 		<div class="container"><div class="split-inner">
-			<?php $kpibi_pourqui_img = kpibi_f( 'pourqui_image', '' ); ?>
-			<?php if ( $kpibi_pourqui_img ) : ?>
-				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourqui_img, kpibi__( 'Illustration de la section « Pour qui »' ) ) ); ?>" class="split-img reveal" loading="lazy">
-			<?php else : ?>
-				<div class="split-img reveal" style="background:#ECEAE3;" aria-hidden="true"></div>
-			<?php endif; ?>
-			<div class="split-content reveal reveal-delay-1">
+			<div class="split-content reveal">
 				<p class="section-label"><?php echo esc_html( kpibi_f( 'pourqui_label', 'Pour qui nous travaillons' ) ); ?></p>
 				<h2><?php
 					echo esc_html( kpibi_f( 'pourqui_titre', 'Des dirigeants qui veulent' ) ) . ' ';
@@ -349,7 +402,31 @@ while ( have_posts() ) :
 				?></h2>
 				<p><?php echo esc_html( kpibi_f( 'pourqui_texte1', 'Nous travaillons avec des dirigeants qui veulent augmenter leur capacité sans nécessairement embaucher, réduire leurs coûts opérationnels ou soutenir une croissance qui commence à créer plus de friction que de valeur.' ) ); ?></p>
 				<p><?php echo esc_html( kpibi_f( 'pourqui_texte2', 'Nos clients viennent de secteurs très variés : fabrication, distribution, construction, services professionnels, santé, technologies, commerce de détail et secteur municipal. Ce qu\'ils ont en commun, c\'est que leur croissance ou leur complexité exige des processus et des systèmes mieux structurés.' ) ); ?></p>
+				<?php if ( $kpibi_svcauto_pourqui_items ) : ?>
+					<?php
+					// Liste des cas (KPIBI-36, B3).
+					//
+					// Composant .approche-timeline et NON .diff-numbered, malgré le
+					// markup de la maquette : .diff-item-num est écrit pour fond
+					// SOMBRE (bordures et textes en rgba(255,255,255,…)) et serait
+					// illisible ici, .section-split étant sur fond clair. Le commentaire
+					// de style.css est explicite : .approche-timeline a justement été
+					// créée pour remplacer .diff-item-num sur fond clair, ce rendu-là
+					// ayant été jugé « trop tableau » par le client.
+					?>
+					<div class="approche-timeline" style="margin-top:8px;">
+						<?php foreach ( $kpibi_svcauto_pourqui_items as $kpibi_i => $kpibi_cas ) : ?>
+							<div class="approche-timeline-item"><span class="approche-timeline-num"><?php echo esc_html( $kpibi_i + 1 ); ?></span><div class="approche-timeline-content"><strong><?php echo esc_html( $kpibi_cas['titre'] ); ?></strong><span><?php echo esc_html( $kpibi_cas['texte'] ); ?></span></div></div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
 			</div>
+			<?php $kpibi_pourqui_img = kpibi_f( 'pourqui_image', '' ); ?>
+			<?php if ( $kpibi_pourqui_img ) : ?>
+				<img src="<?php echo esc_url( $kpibi_pourqui_img ); ?>" alt="<?php echo esc_attr( kpibi_img_alt( $kpibi_pourqui_img, kpibi__( 'Illustration de la section « Pour qui »' ) ) ); ?>" class="split-img reveal reveal-delay-1" loading="lazy">
+			<?php else : ?>
+				<div class="split-img reveal reveal-delay-1" style="background:#ECEAE3;" aria-hidden="true"></div>
+			<?php endif; ?>
 		</div></div>
 	</section>
 	<?php endif; ?>
@@ -370,11 +447,21 @@ while ( have_posts() ) :
 					foreach ( $kpibi_benefits_items as $kpibi_i => $kpibi_item ) :
 						$kpibi_bicon = ! empty( $kpibi_item['icone'] ) ? $kpibi_item['icone'] : kpibi_guess_benefit_icon( isset( $kpibi_item['titre'] ) ? $kpibi_item['titre'] : '' );
 					?>
-					<div class="benefit-card reveal<?php echo $kpibi_i > 0 ? ' reveal-delay-' . esc_attr( min( $kpibi_i, 4 ) ) : ''; ?>">
+					<?php
+					// Lien optionnel de carte (KPIBI-36, B2) : voir template-service.php.
+					// Le sous-champ appartient au répéteur partagé benefits_items, il
+					// est donc rendu par les TROIS gabarits service, sans quoi un lien
+					// saisi sur cette page resterait sans effet.
+					$kpibi_blien = isset( $kpibi_item['lien'] ) ? trim( (string) $kpibi_item['lien'] ) : '';
+					$kpibi_bcls  = 'benefit-card reveal' . ( $kpibi_i > 0 ? ' reveal-delay-' . min( $kpibi_i, 4 ) : '' );
+					$kpibi_btag  = ( '' !== $kpibi_blien ) ? 'a' : 'div';
+					$kpibi_bhref = ( '' !== $kpibi_blien ) ? ' href="' . esc_url( kpibi_link( $kpibi_blien, 'cas-clients' ) ) . '"' : '';
+					?>
+					<<?php echo esc_attr( $kpibi_btag ); ?> class="<?php echo esc_attr( $kpibi_bcls ); ?>"<?php echo $kpibi_bhref; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href construit avec esc_url() ci-dessus. ?>>
 						<div class="benefit-icon"><svg viewBox="0 0 24 24"><?php echo kpibi_icon( $kpibi_bicon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></svg></div>
 						<h3><?php echo esc_html( $kpibi_item['titre'] ); ?></h3>
 						<p><?php echo esc_html( $kpibi_item['texte'] ); ?></p>
-					</div>
+					</<?php echo esc_attr( $kpibi_btag ); ?>>
 				<?php endforeach; ?>
 			</div>
 		</div>

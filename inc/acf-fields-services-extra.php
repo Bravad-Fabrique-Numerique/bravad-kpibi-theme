@@ -185,6 +185,36 @@ function kpibi_register_service_extra_fields() {
 	$fields_auto[] = $area( 'svcauto_techno_texte2', 'Paragraphe 2', "Cette combinaison nous permet de créer des automatisations fiables qui s'intègrent parfaitement à votre environnement existant, même lorsque les systèmes ne communiquent pas nativement.", 320 );
 	$fields_auto[] = $area( 'svcauto_techno_texte3', 'Paragraphe 3', "Nous ne choisissons pas la technologie la plus complexe. Nous choisissons celle qui fonctionne le mieux pour éliminer le travail sans valeur.", 260 );
 
+	// ----- Section « Pour qui » : liste des cas (KPIBI-36, B3) -----
+	//
+	// Le texte de la maquette n'avait jamais été implémenté : le gabarit ne
+	// rendait que les deux paragraphes de la section commune « Pour qui », et
+	// aucun champ répétable n'existait pour ces cas.
+	//
+	// Répéteur préfixé `svcauto_`, conforme à la règle anti-collision : la liste
+	// est propre à la page Automatisation, elle n'a rien à faire dans le groupe
+	// commun aux trois gabarits service.
+	//
+	// La maquette approuvée en contient CINQ, pas six. Ils sont livrés tels
+	// quels, sans en inventer un sixième.
+	$kpibi_svcauto_pourqui_sub_titre        = $txt( 'titre', 'Titre', '', 90 );
+	$kpibi_svcauto_pourqui_sub_titre['key'] = 'field_kpibi_svcauto_pourqui_titre';
+	$kpibi_svcauto_pourqui_sub_texte        = $area( 'texte', 'Texte', '', 160 );
+	$kpibi_svcauto_pourqui_sub_texte['key'] = 'field_kpibi_svcauto_pourqui_texte';
+	$fields_auto[] = array(
+		'key'          => 'field_kpibi_svcauto_pourqui_items',
+		'label'        => 'Liste numérotée — « Cette approche est idéale pour vous si… »',
+		'name'         => 'svcauto_pourqui_items',
+		'type'         => 'repeater',
+		'instructions' => "Les cas numérotés affichés sous les deux paragraphes de la section « Pour qui ». La maquette approuvée en contient 5. Vider la liste retire le bloc, la section garde ses paragraphes.",
+		'layout'       => 'block',
+		'button_label' => 'Ajouter un cas',
+		'sub_fields'   => array(
+			$kpibi_svcauto_pourqui_sub_titre,
+			$kpibi_svcauto_pourqui_sub_texte,
+		),
+	);
+
 	acf_add_local_field_group(
 		array(
 			'key'             => 'group_kpibi_service_automatisation_unique',

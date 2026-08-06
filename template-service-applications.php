@@ -41,7 +41,11 @@ while ( have_posts() ) :
 		),
 		array(
 			'titre' => 'Applications mobiles terrain',
-			'texte' => 'Applications mobiles pour vos équipes sur la route, accessibles en tout temps, même hors ligne.',
+			// « , même hors ligne » retiré (KPIBI-36, A3) : l'affirmation était
+			// fausse. Ce texte ne vient pas d'ACF mais de ce tableau de défauts,
+			// et aucun champ en base ne le porte : c'est bien cette chaîne qui
+			// s'affiche, sur la page FR comme sur la page EN.
+			'texte' => 'Applications mobiles pour vos équipes sur la route, accessibles en tout temps.',
 			'icone' => 'mobile',
 		),
 		array(
@@ -163,8 +167,10 @@ while ( have_posts() ) :
 		<div class="container"><div class="page-hero-inner">
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'service_hero_label', 'Développement · Applications web sur mesure' ) ); ?></p>
 			<h1><?php
-				echo esc_html( kpibi_f( 'service_hero_titre', 'Créer les outils que vos' ) ) . ' ';
-				echo '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'opérations méritent.' ) ) . '</strong>';
+				// Une phrase par ligne (KPIBI-36, C2).
+				$kpibi_h1  = esc_html( kpibi_f( 'service_hero_titre', 'Créer les outils que vos' ) ) . ' ';
+				$kpibi_h1 .= '<strong>' . esc_html( kpibi_f( 'service_hero_titre_fort', 'opérations méritent.' ) ) . '</strong>';
+				echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 			?></h1>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'service_hero_sub', "Des applications d'affaires conçues pour votre réalité : simples à utiliser, parfaitement alignées sur vos processus et pensées pour rendre la performance naturelle." ) ); ?></p>
 			<div class="page-hero-actions">
@@ -254,7 +260,15 @@ while ( have_posts() ) :
 				?></h2>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte1', 'Vos employés travaillent fort. Pourtant, les mêmes erreurs reviennent, les délais s\'accumulent et la croissance crée plus de friction qu\'elle n\'en résout.' ) ); ?></p>
 				<p><?php echo esc_html( kpibi_f( 'approche_texte2', "Lorsqu'un problème survient, la réaction naturelle consiste souvent à ajouter de la formation, du contrôle ou des procédures. Notre approche est différente : nous cherchons d'abord à comprendre comment les processus, les outils, l'information et l'environnement de travail influencent les comportements et les résultats." ) ); ?></p>
-				<p><?php echo esc_html( kpibi_f( 'approche_texte3', "Parce qu'un système bien conçu crée généralement plus de performance qu'un effort humain supplémentaire." ) ); ?></p>
+				<?php
+				// Paragraphe 3 : voir KPIBI-36 (A2). Le champ approche_texte3 est
+				// partagé par les trois gabarits service ; le défaut est retiré
+				// partout, sinon le vider sur une page le ferait réapparaître ici.
+				$kpibi_approche_texte3 = kpibi_f( 'approche_texte3' );
+				?>
+				<?php if ( '' !== trim( $kpibi_approche_texte3 ) ) : ?>
+					<p><?php echo esc_html( $kpibi_approche_texte3 ); ?></p>
+				<?php endif; ?>
 				<?php $kpibi_approche_btn_url = kpibi_f( 'approche_btn_url', '#demarche' ); ?>
 				<?php $kpibi_approche_btn_texte = kpibi_f( 'approche_btn_texte', 'Voir notre démarche' ); ?>
 				<?php if ( $kpibi_approche_btn_texte ) : ?>
@@ -348,12 +362,20 @@ while ( have_posts() ) :
 				<?php
 				foreach ( $kpibi_benefits_items as $kpibi_i => $kpibi_item ) :
 					$kpibi_bicon = ! empty( $kpibi_item['icone'] ) ? $kpibi_item['icone'] : kpibi_guess_benefit_icon( isset( $kpibi_item['titre'] ) ? $kpibi_item['titre'] : '' );
+					// Lien optionnel de carte (KPIBI-36, B2) : voir template-service.php.
+					// Le sous-champ appartient au répéteur partagé benefits_items, il
+					// est donc rendu par les TROIS gabarits service, sans quoi un lien
+					// saisi sur cette page resterait sans effet.
+					$kpibi_blien = isset( $kpibi_item['lien'] ) ? trim( (string) $kpibi_item['lien'] ) : '';
+					$kpibi_bcls  = 'benefit-card reveal' . ( $kpibi_i > 0 ? ' reveal-delay-' . min( $kpibi_i, 4 ) : '' );
+					$kpibi_btag  = ( '' !== $kpibi_blien ) ? 'a' : 'div';
+					$kpibi_bhref = ( '' !== $kpibi_blien ) ? ' href="' . esc_url( kpibi_link( $kpibi_blien, 'cas-clients' ) ) . '"' : '';
 					?>
-					<div class="benefit-card reveal<?php echo $kpibi_i > 0 ? ' reveal-delay-' . esc_attr( min( $kpibi_i, 4 ) ) : ''; ?>">
+					<<?php echo esc_attr( $kpibi_btag ); ?> class="<?php echo esc_attr( $kpibi_bcls ); ?>"<?php echo $kpibi_bhref; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href construit avec esc_url() ci-dessus. ?>>
 						<div class="benefit-icon"><svg viewBox="0 0 24 24"><?php echo kpibi_icon( $kpibi_bicon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></svg></div>
 						<h3><?php echo esc_html( $kpibi_item['titre'] ); ?></h3>
 						<p><?php echo esc_html( $kpibi_item['texte'] ); ?></p>
-					</div>
+					</<?php echo esc_attr( $kpibi_btag ); ?>>
 				<?php endforeach; ?>
 			</div>
 		</div>

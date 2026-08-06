@@ -216,8 +216,10 @@ while ( have_posts() ) :
 		<div class="container"><div class="page-hero-inner">
 			<p class="page-hero-label"><?php echo esc_html( kpibi_f( 'banniere_label', 'Cas clients · Résultats réels' ) ); ?></p>
 			<h1><?php
-				echo esc_html( kpibi_f( 'banniere_titre', 'Ce que ça donne, concrètement, pour des entreprises' ) );
-				echo ' <strong>' . esc_html( kpibi_f( 'banniere_titre_fort', 'comme la vôtre.' ) ) . '</strong>';
+				// Une phrase par ligne (KPIBI-36, C2).
+				$kpibi_h1  = esc_html( kpibi_f( 'banniere_titre', 'Ce que ça donne, concrètement, pour des entreprises' ) );
+				$kpibi_h1 .= ' <strong>' . esc_html( kpibi_f( 'banniere_titre_fort', 'comme la vôtre.' ) ) . '</strong>';
+				echo kpibi_titre_phrases( $kpibi_h1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fragments déjà échappés ci-dessus, le helper n'ajoute que des <br>.
 			?></h1>
 			<p class="page-hero-sub"><?php echo esc_html( kpibi_f( 'banniere_sous_titre', 'Trois mandats, trois réalités différentes. Le même fil conducteur : des opérations simplifiées, des données fiables et des gains mesurables qui durent.' ) ); ?></p>
 			<div class="page-hero-actions">
